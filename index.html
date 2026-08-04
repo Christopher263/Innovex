@@ -410,6 +410,13 @@
 <meta name="description" content="Innovex automates client, proposal, and invoice follow-up for boutique agencies and consulting firms, so nothing sits unpaid or unanswered." />
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <meta name="theme-color" content="#6E56CF" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  var sb = supabase.createClient(
+    'https://mdehbdzhklaiebxtjowt.supabase.co',
+    'sb_publishable_IYvIEUQTN4lLGoD7Q2W1nw_bJmRm6M2'
+  );
+</script>
 </head>
 <body>
 
@@ -1512,8 +1519,21 @@
   tabSignin.addEventListener('click', function () { setAuthMode('signin'); });
   switchToSignin.addEventListener('click', function () { setAuthMode(authMode === 'signup' ? 'signin' : 'signup'); });
 
-  document.getElementById('googleBtn').addEventListener('click', function () {
-    document.getElementById('oauthNote').classList.add('show');
+  document.getElementById('googleBtn').addEventListener('click', async function () {
+    var note = document.getElementById('oauthNote');
+    try {
+      var result = await sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin + '/dashboard.html' }
+      });
+      if (result.error) {
+        note.textContent = result.error.message;
+        note.classList.add('show');
+      }
+    } catch (err) {
+      note.textContent = 'Google sign-in failed to start: ' + err.message;
+      note.classList.add('show');
+    }
   });
 
   document.getElementById('authForm').addEventListener('submit', function (e) {
