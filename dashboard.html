@@ -187,6 +187,14 @@
   .seq-status { font-size: 12px; font-weight: 600; color: var(--ink-faint); }
   .seq-status.on { color: var(--good); }
 
+  .seq-edit-form { display: flex; flex-direction: column; gap: 12px; }
+  .seq-edit-form input[type="text"] { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); font-size: 13px; }
+  .seq-edit-form label.block { display: flex; flex-direction: column; gap: 4px; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-faint); }
+  .seq-edit-steps { display: flex; flex-direction: column; gap: 8px; }
+  .seq-edit-step { display: grid; grid-template-columns: 90px 1fr auto; gap: 8px; align-items: center; }
+  .seq-edit-step input { padding: 7px 9px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); font-size: 12.5px; }
+  .seq-edit-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+
   /* ---------- approval queue ---------- */
   .draft-card + .draft-card { border-top: 1px solid var(--border); }
   .draft-card { padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
@@ -237,6 +245,16 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: none; }
     :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: block; }
+  }
+
+  @media print {
+    body { background: #fff; color: #18151F; }
+    .sidebar, .toast, #dashLoading, .topbar button { display: none !important; }
+    .app-shell { display: block; }
+    .main { padding: 0; }
+    .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+    .chart-tooltip { display: none !important; }
+    .report-grid { grid-template-columns: 1fr; }
   }
 </style>
 <script>
@@ -593,14 +611,18 @@
     });
   }
 
+  var editingSeqId = null;
+  var editingSeqDraft = null;
+
   function renderSequences() {
     var el = document.getElementById('seqList');
     el.innerHTML = state.seqs.map(function (s) {
+      if (s.id === editingSeqId) return renderSeqEditForm(editingSeqDraft);
       var steps = s.steps.map(function (st) {
-        return '<div class="seq-step"><div class="d">' + st[0] + '</div><div class="t">' + st[1] + '</div></div>';
+        return '<div class="seq-step"><div class="d">' + escapeHtml(st[0]) + '</div><div class="t">' + escapeHtml(st[1]) + '</div></div>';
       }).join('');
       return '<div class="seq-card">' +
-        '<div class="seq-top"><div><h3>' + s.name + '</h3><p>' + s.desc + '</p></div>' +
+        '<div class="seq-top"><div><h3>' + escapeHtml(s.name) + '</h3><p>' + escapeHtml(s.desc) + '</p></div>' +
         '<div class="seq-actions"><span class="seq-status' + (s.active ? ' on' : '') + '">' + (s.active ? 'Active' : 'Paused') + '</span>' +
         '<label class="switch"><input type="checkbox" data-seq-toggle="' + s.id + '" ' + (s.active ? 'checked' : '') + ' /><span class="track"></span></label>' +
         '<button class="btn btn-sm" data-seq-edit="' + s.id + '" type="button">Edit</button></div></div>' +
@@ -617,7 +639,71 @@
       });
     });
     document.querySelectorAll('[data-seq-edit]').forEach(function (btn) {
-      btn.addEventListener('click', function () { toast('Sequence editing is coming soon.'); });
+      btn.addEventListener('click', function () {
+        var s = state.seqs.find(function (s) { return s.id == btn.getAttribute('data-seq-edit'); });
+        editingSeqId = s.id;
+        editingSeqDraft = { id: s.id, name: s.name, desc: s.desc, active: s.active, steps: s.steps.map(function (st) { return st.slice(); }) };
+        renderSequences();
+      });
+    });
+    wireSeqEditForm();
+  }
+
+  function renderSeqEditForm(draft) {
+    if (!draft) return '';
+    var stepsHtml = draft.steps.map(function (st, idx) {
+      return '<div class="seq-edit-step">' +
+        '<input type="text" data-seq-step-day="' + idx + '" value="' + escapeHtml(st[0]) + '" placeholder="Day 0" />' +
+        '<input type="text" data-seq-step-text="' + idx + '" value="' + escapeHtml(st[1]) + '" placeholder="What happens" />' +
+        '<button class="btn btn-sm" data-seq-step-remove="' + idx + '" type="button" aria-label="Remove step">✕</button>' +
+        '</div>';
+    }).join('');
+    return '<div class="seq-card"><div class="seq-edit-form">' +
+      '<label class="block">Name<input type="text" id="seqEditName" value="' + escapeHtml(draft.name) + '" /></label>' +
+      '<label class="block">Description<input type="text" id="seqEditDesc" value="' + escapeHtml(draft.desc) + '" /></label>' +
+      '<label class="block">Steps</label>' +
+      '<div class="seq-edit-steps" id="seqEditSteps">' + stepsHtml + '</div>' +
+      '<div><button class="btn btn-sm" id="seqAddStep" type="button">+ Add step</button></div>' +
+      '<div class="seq-edit-actions"><button class="btn btn-sm" id="seqEditCancel" type="button">Cancel</button><button class="btn btn-primary btn-sm" id="seqEditSave" type="button">Save sequence</button></div>' +
+      '</div></div>';
+  }
+
+  function wireSeqEditForm() {
+    var addBtn = document.getElementById('seqAddStep');
+    if (!addBtn) return;
+    addBtn.addEventListener('click', function () {
+      editingSeqDraft.steps.push(['Day 0', '']);
+      renderSequences();
+    });
+    document.querySelectorAll('[data-seq-step-remove]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        editingSeqDraft.steps.splice(parseInt(btn.getAttribute('data-seq-step-remove'), 10), 1);
+        renderSequences();
+      });
+    });
+    document.getElementById('seqEditCancel').addEventListener('click', function () {
+      editingSeqId = null;
+      editingSeqDraft = null;
+      renderSequences();
+    });
+    document.getElementById('seqEditSave').addEventListener('click', function () {
+      var stepInputsDay = document.querySelectorAll('[data-seq-step-day]');
+      var stepInputsText = document.querySelectorAll('[data-seq-step-text]');
+      var steps = [];
+      for (var i = 0; i < stepInputsDay.length; i++) {
+        steps.push([stepInputsDay[i].value.trim() || 'Day 0', stepInputsText[i].value.trim()]);
+      }
+      var name = document.getElementById('seqEditName').value.trim();
+      if (!name) { toast('Give the sequence a name first.'); return; }
+      var seq = state.seqs.find(function (s) { return s.id === editingSeqId; });
+      seq.name = name;
+      seq.desc = document.getElementById('seqEditDesc').value.trim();
+      seq.steps = steps;
+      saveSeqs();
+      editingSeqId = null;
+      editingSeqDraft = null;
+      renderSequences();
+      toast(name + ' saved.');
     });
   }
 
@@ -844,7 +930,11 @@
   document.getElementById('btnGoPipeline').addEventListener('click', function () {
     document.querySelector('.navitem[data-tab="pipeline"]').click();
   });
-  document.getElementById('btnExport').addEventListener('click', function () { toast('PDF export is coming soon.'); });
+  document.getElementById('btnExport').addEventListener('click', function () {
+    var reportsTab = document.querySelector('.navitem[data-tab="reports"]');
+    if (reportsTab && !reportsTab.classList.contains('active')) reportsTab.click();
+    setTimeout(function () { window.print(); }, 50);
+  });
   document.getElementById('btnNewSeq').addEventListener('click', function () { toast('Custom sequences are coming soon.'); });
 
   var THEME_KEY = 'innovex_theme';
