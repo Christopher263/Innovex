@@ -1524,7 +1524,11 @@
     try {
       var result = await sb.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.origin + '/dashboard.html' }
+        options: {
+          redirectTo: window.location.origin + '/dashboard.html',
+          scopes: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send',
+          queryParams: { access_type: 'offline', prompt: 'consent' }
+        }
       });
       if (result.error) {
         note.textContent = result.error.message;
@@ -1536,7 +1540,7 @@
     }
   });
 
-  document.getElementById('authForm').addEventListener('submit', function (e) {
+  document.getElementById('authForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     var name = document.getElementById('fldName').value.trim();
     var email = document.getElementById('fldEmail').value.trim();
@@ -1552,18 +1556,62 @@
       return;
     }
     errorEl.classList.remove('show');
-    var until = new Date();
-    until.setDate(until.getDate() + 7);
-    var untilLabel = until.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+    authSubmit.disabled = true;
     try {
-      localStorage.setItem('innovex_trial_account', JSON.stringify({ name: name || email.split('@')[0], email: email, startedAt: new Date().toISOString(), trialUntil: until.toISOString() }));
+      if (authMode === 'signup') {
+        var signUpResult = await sb.auth.signUp({
+          email: email,
+          password: password,
+          options: { data: { full_name: name } }
+        });
+        if (signUpResult.error) {
+          errorEl.textContent = signUpResult.error.message;
+          errorEl.classList.add('show');
+          return;
+        }
+        if (!signUpResult.data.session) {
+          errorEl.textContent = 'Account created — check your email to confirm it, then sign in.';
+          errorEl.classList.add('show');
+          setAuthMode('signin');
+          return;
+        }
+        await showTrialSuccess(name, email);
+      } else {
+        var signInResult = await sb.auth.signInWithPassword({ email: email, password: password });
+        if (signInResult.error) {
+          errorEl.textContent = signInResult.error.message;
+          errorEl.classList.add('show');
+          return;
+        }
+        window.location.href = DASHBOARD_URL;
+      }
+    } catch (err) {
+      errorEl.textContent = 'Something went wrong: ' + err.message;
+      errorEl.classList.add('show');
+    } finally {
+      authSubmit.disabled = false;
+    }
+  });
+
+  async function showTrialSuccess(name, email) {
+    var untilLabel = '';
+    try {
+      var profileRes = await sb.from('profiles').select('trial_ends_at').single();
+      if (profileRes.data && profileRes.data.trial_ends_at) {
+        untilLabel = new Date(profileRes.data.trial_ends_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+      }
     } catch (err) {}
+    if (!untilLabel) {
+      var fallback = new Date();
+      fallback.setDate(fallback.getDate() + 7);
+      untilLabel = fallback.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+    }
     document.getElementById('successName').textContent = name || email.split('@')[0];
     document.getElementById('trialUntil').textContent = untilLabel;
     document.getElementById('goToDashboard').href = DASHBOARD_URL;
     viewAuth.classList.remove('active');
     viewSuccess.classList.add('active');
-  });
+  }
 </script>
 </body>
 </html>

@@ -83,6 +83,7 @@
   }
   .navitem:hover { background: var(--surface-sunk); color: var(--ink); }
   .navitem.active { background: var(--accent-soft); color: var(--accent-strong); }
+  .navitem .count-badge { margin-left: auto; background: var(--critical); color: #fff; border-radius: 999px; padding: 1px 7px; font-size: 11px; font-weight: 700; }
   .side-foot { padding: 10px; border-top: 1px solid var(--border); margin-top: 8px; display: flex; align-items: center; gap: 9px; }
   .side-foot .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
   .side-foot .who b { display: block; font-size: 12.5px; }
@@ -186,6 +187,26 @@
   .seq-status { font-size: 12px; font-weight: 600; color: var(--ink-faint); }
   .seq-status.on { color: var(--good); }
 
+  /* ---------- approval queue ---------- */
+  .draft-card + .draft-card { border-top: 1px solid var(--border); }
+  .draft-card { padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+  .draft-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .draft-top h3 { font-size: 14px; margin: 0; }
+  .draft-top .reason { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
+  .draft-body { background: var(--surface-sunk); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 13px; white-space: pre-wrap; color: var(--ink-soft); }
+  .draft-actions { display: flex; gap: 8px; }
+
+  /* ---------- settings ---------- */
+  .settings-row { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .settings-form { padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; max-width: 420px; }
+  .settings-form label { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); }
+  .settings-form input, .settings-form select { padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 400; }
+  .settings-form label span { font-weight: 400; color: var(--ink-faint); }
+  .trial-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .trial-pill.ok { background: var(--accent-soft); color: var(--accent-strong); }
+  .trial-pill.warn { background: rgba(230,160,40,0.15); color: #a66a12; }
+  .trial-pill.expired { background: rgba(214,60,60,0.15); color: var(--critical); }
+
   /* ---------- chart ---------- */
   .chart-card .chart-wrap { padding: 20px 20px 10px; position: relative; }
   .bars-lg { display: flex; align-items: flex-end; gap: 14px; height: 210px; }
@@ -266,6 +287,15 @@
         <svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="13" y="8" width="3" height="10"/><rect x="19" y="5" width="0.1" height="13"/></svg>
         <span>Reports</span>
       </button>
+      <button class="navitem" data-tab="approvals" type="button">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        <span>Approval Queue</span>
+        <span class="count-badge" id="approvalBadge" hidden>0</span>
+      </button>
+      <button class="navitem" data-tab="settings" type="button">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.4-2.4.6a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.3 2.7a7.6 7.6 0 0 0-1.7 1l-2.4-.6-2 3.4L6.6 11a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.4 2.4-.6a7.6 7.6 0 0 0 1.7 1L11 21h4l.3-2.7a7.6 7.6 0 0 0 1.7-1l2.4.6 2-3.4z"/></svg>
+        <span>Settings</span>
+      </button>
       <button class="navitem theme-toggle" id="themeToggleBtn" type="button" aria-label="Toggle dark mode">
         <svg class="icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12h2.6M18.9 12h2.6M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
         <svg class="icon icon-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5z"/></svg>
@@ -288,9 +318,9 @@
       <div class="content">
         <div class="stat-row">
           <div class="stat-card"><div class="label">Revenue at risk</div><b class="tnum" id="statAtRisk">$0</b><div class="delta warn">Across <span id="statAtRiskCount">0</span> open items</div></div>
-          <div class="stat-card"><div class="label">Recovered this month</div><b class="tnum">$38,000</b><div class="delta good">↑ 12% vs last month</div></div>
-          <div class="stat-card"><div class="label">Reply rate</div><b class="tnum">61%</b><div class="delta good">↑ 4pt vs last month</div></div>
-          <div class="stat-card"><div class="label">Avg. days to close</div><b class="tnum">9.4</b><div class="delta good">↓ 1.2 days vs last month</div></div>
+          <div class="stat-card"><div class="label">Recovered this month</div><b class="tnum" id="statRecovered">$0</b><div class="delta" id="statRecoveredNote">Since your trial started</div></div>
+          <div class="stat-card"><div class="label">Reply rate</div><b class="tnum" id="statReplyRate">—</b><div class="delta" id="statReplyRateNote">Across all tracked threads</div></div>
+          <div class="stat-card"><div class="label">Avg. days to close</div><b class="tnum" id="statAvgDays">—</b><div class="delta" id="statAvgDaysNote">From sent to signed/paid</div></div>
         </div>
 
         <div class="card">
@@ -367,6 +397,55 @@
         </div>
       </div>
     </section>
+
+    <!-- APPROVAL QUEUE -->
+    <section class="tab-panel" id="tab-approvals">
+      <div class="topbar">
+        <div><h1>Approval Queue</h1><div class="sub">AI-drafted follow-ups, waiting on your go-ahead before anything sends.</div></div>
+      </div>
+      <div class="content">
+        <div class="card">
+          <div class="card-head">
+            <h2>Pending drafts</h2>
+            <span class="meta" id="approvalsMeta">— pending</span>
+          </div>
+          <div id="approvalsList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="tab-panel" id="tab-settings">
+      <div class="topbar">
+        <div><h1>Settings</h1><div class="sub">Your trial, your inbox connection, and how Innovex follows up.</div></div>
+      </div>
+      <div class="content">
+        <div class="card" id="trialBanner" style="margin-bottom:16px;"></div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-head"><h2>Gmail connection</h2></div>
+          <div id="gmailStatus" class="settings-row"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Follow-up cadence</h2></div>
+          <div class="settings-form">
+            <label>First follow-up<input type="number" id="setFirstDays" min="1" max="30" /><span>days after send</span></label>
+            <label>Second follow-up<input type="number" id="setSecondDays" min="1" max="60" /><span>days after send</span></label>
+            <label>Final follow-up<input type="number" id="setFinalDays" min="1" max="90" /><span>days after send</span></label>
+            <label>Tone
+              <select id="setTone">
+                <option value="professional">Professional</option>
+                <option value="friendly">Friendly</option>
+                <option value="direct">Direct</option>
+              </select>
+            </label>
+            <label>Sign-off name<input type="text" id="setSignature" placeholder="Your name" /></label>
+            <button class="btn btn-primary btn-sm" id="btnSaveSettings" type="button">Save settings</button>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -379,23 +458,7 @@
     { key: 'replied', label: 'Replied' },
     { key: 'signed_paid', label: 'Signed / Paid' }
   ];
-
-  var DEFAULT_ITEMS = [
-    { id: 1, client: 'Vesper Media', kind: 'proposal', desc: 'Brand refresh scope', amount: 18200, days: 1, stage: 0, overdue: false },
-    { id: 2, client: 'Oakline Group', kind: 'proposal', desc: 'Q1 retainer', amount: 7400, days: 4, stage: 0, overdue: false },
-    { id: 3, client: 'Cedar & Vine Consulting', kind: 'invoice', desc: 'Invoice #201', amount: 15000, days: 1, stage: 0, overdue: false },
-    { id: 4, client: 'Thistle & Co', kind: 'proposal', desc: 'Website rebuild', amount: 5600, days: 2, stage: 0, overdue: false },
-    { id: 5, client: 'Bramwell & Co.', kind: 'proposal', desc: 'Q4 campaign', amount: 24000, days: 6, stage: 1, overdue: false },
-    { id: 6, client: 'Atlas Advisory', kind: 'invoice', desc: 'Invoice #098', amount: 12300, days: 3, stage: 1, overdue: false },
-    { id: 7, client: 'Marlowe Digital', kind: 'proposal', desc: 'SEO engagement', amount: 9200, days: 8, stage: 1, overdue: false },
-    { id: 8, client: 'Nordvik Studio', kind: 'invoice', desc: 'Invoice #114', amount: 9800, days: 19, stage: 1, overdue: true },
-    { id: 9, client: 'Half Light Consulting', kind: 'proposal', desc: 'Retainer scope', amount: 41500, days: 2, stage: 2, overdue: false },
-    { id: 10, client: 'Birchfield Partners', kind: 'invoice', desc: 'Invoice #077', amount: 6700, days: 5, stage: 2, overdue: false },
-    { id: 11, client: 'Greyson Advisory', kind: 'proposal', desc: 'Strategy sprint', amount: 19400, days: 3, stage: 2, overdue: false },
-    { id: 12, client: 'Corran Studio', kind: 'invoice', desc: 'Invoice #061', amount: 15900, days: 0, stage: 3, overdue: false },
-    { id: 13, client: 'Fenwick & Rowe', kind: 'proposal', desc: 'Annual contract', amount: 22000, days: 0, stage: 3, overdue: false },
-    { id: 14, client: 'Ampersand Studio', kind: 'invoice', desc: 'Invoice #045', amount: 31200, days: 0, stage: 3, overdue: false }
-  ];
+  var STAGE_INDEX = { sent: 0, followed_up: 1, replied: 2, signed_paid: 3 };
 
   var DEFAULT_SEQS = [
     { id: 1, name: 'Proposal follow-up (default)', desc: 'Used automatically on every new proposal unless overridden.', active: true,
@@ -406,32 +469,16 @@
       steps: [['Day 0','Sent'],['Day 5','Nudge'],['Day 12','Check-in']] }
   ];
 
-  var CLIENT_REPORT = [
-    { client: 'Ampersand Studio', recovered: 31200, reply: 74, days: 6.1 },
-    { client: 'Fenwick & Rowe', recovered: 22000, reply: 68, days: 8.4 },
-    { client: 'Corran Studio', recovered: 15900, reply: 71, days: 7.0 },
-    { client: 'Ravenscourt Media', recovered: 12400, reply: 58, days: 11.2 },
-    { client: 'Holloway & James', recovered: 8900, reply: 63, days: 9.8 }
-  ];
-
-  var CHART_DATA = [
-    ['Mar', 14000], ['Apr', 19000], ['May', 17000], ['Jun', 25000], ['Jul', 27000], ['Aug', 38000]
-  ];
-
   var money = function (n) { return '$' + Math.round(n).toLocaleString('en-US'); };
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
 
-  var state = {
-    items: null,
-    seqs: null
-  };
-  (function loadState() {
-    var items = null, seqs = null;
-    try { items = JSON.parse(localStorage.getItem('innovex_dash_items_v1')); } catch (e) {}
-    try { seqs = JSON.parse(localStorage.getItem('innovex_dash_seqs_v1')); } catch (e) {}
-    state.items = (items && items.length) ? items : DEFAULT_ITEMS.slice();
-    state.seqs = (seqs && seqs.length) ? seqs : DEFAULT_SEQS.slice();
-  })();
-  function saveItems() { try { localStorage.setItem('innovex_dash_items_v1', JSON.stringify(state.items)); } catch (e) {} }
+  var state = { items: [], seqs: null, drafts: [], revenueEvents: [], settings: null, profile: null, gmailConn: null };
+  var CURRENT_USER = null;
+
   function saveSeqs() { try { localStorage.setItem('innovex_dash_seqs_v1', JSON.stringify(state.seqs)); } catch (e) {} }
 
   var toastEl = document.getElementById('toast');
@@ -451,6 +498,21 @@
     return '<span class="chip good">Signed / Paid</span>';
   }
 
+  function rowToItem(row) {
+    var ref = row.last_outbound_at || row.created_at;
+    var days = ref ? Math.max(0, Math.floor((Date.now() - new Date(ref).getTime()) / 86400000)) : 0;
+    return {
+      id: row.id,
+      client: row.client_name || 'Unknown client',
+      kind: row.kind,
+      desc: row.subject || row.snippet || (row.kind === 'invoice' ? 'Invoice' : 'Proposal'),
+      amount: Number(row.amount) || 0,
+      days: days,
+      stage: STAGE_INDEX[row.stage] != null ? STAGE_INDEX[row.stage] : 0,
+      overdue: !!row.overdue
+    };
+  }
+
   function renderOverview() {
     var open = state.items.filter(function (i) { return i.stage < 3; });
     var total = open.reduce(function (s, i) { return s + i.amount; }, 0);
@@ -460,7 +522,7 @@
     open.sort(function (a, b) { return b.amount - a.amount; });
     var rows = open.map(function (i) {
       return '<tr>' +
-        '<td class="cell-client"><b>' + i.client + '</b><span>' + (i.kind === 'invoice' ? 'Invoice' : 'Proposal') + ' — ' + i.desc + '</span></td>' +
+        '<td class="cell-client"><b>' + escapeHtml(i.client) + '</b><span>' + (i.kind === 'invoice' ? 'Invoice' : 'Proposal') + ' — ' + escapeHtml(i.desc) + '</span></td>' +
         '<td class="num tnum">' + money(i.amount) + '</td>' +
         '<td class="tnum">' + i.days + ' day' + (i.days === 1 ? '' : 's') + '</td>' +
         '<td>' + stageChip(i.stage, i.overdue, i.days) + '</td>' +
@@ -470,10 +532,28 @@
     document.getElementById('riskTableBody').innerHTML = rows || '<tr><td colspan="5" class="empty-hint">Nothing at risk right now.</td></tr>';
     document.querySelectorAll('[data-followup]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var item = state.items.find(function (i) { return i.id == btn.getAttribute('data-followup'); });
-        toast('Follow-up sent to ' + item.client + '.');
+        var approvalsTab = document.querySelector('.navitem[data-tab="approvals"]');
+        if (approvalsTab) approvalsTab.click();
+        toast('Approve a drafted follow-up below to send it.');
       });
     });
+
+    var now = new Date();
+    var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    var recoveredThisMonth = state.revenueEvents
+      .filter(function (r) { return new Date(r.recovered_at) >= monthStart; })
+      .reduce(function (s, r) { return s + Number(r.amount); }, 0);
+    document.getElementById('statRecovered').textContent = money(recoveredThisMonth);
+
+    var totalThreads = state.items.length;
+    var replied = state.items.filter(function (i) { return i.stage >= 2; }).length;
+    document.getElementById('statReplyRate').textContent = totalThreads ? Math.round((replied / totalThreads) * 100) + '%' : '—';
+
+    var daysToClose = state.revenueEvents
+      .map(function (r) { return (r.email_threads && r.email_threads.created_at) ? (new Date(r.recovered_at) - new Date(r.email_threads.created_at)) / 86400000 : null; })
+      .filter(function (d) { return d != null && d >= 0; });
+    var avgDays = daysToClose.length ? (daysToClose.reduce(function (a, b) { return a + b; }, 0) / daysToClose.length) : null;
+    document.getElementById('statAvgDays').textContent = avgDays != null ? avgDays.toFixed(1) : '—';
   }
 
   function renderKanban() {
@@ -484,7 +564,7 @@
         var prevDisabled = idx === 0 ? 'disabled' : '';
         var nextDisabled = idx === STAGES.length - 1 ? 'disabled' : '';
         return '<div class="kcard' + (i.overdue ? ' overdue' : '') + '">' +
-          '<div class="top"><div><b>' + i.client + '</b><div class="desc">' + (i.kind === 'invoice' ? 'Invoice' : 'Proposal') + ' — ' + i.desc + '</div></div>' +
+          '<div class="top"><div><b>' + escapeHtml(i.client) + '</b><div class="desc">' + (i.kind === 'invoice' ? 'Invoice' : 'Proposal') + ' — ' + escapeHtml(i.desc) + '</div></div>' +
           '<div class="amt tnum">' + money(i.amount) + '</div></div>' +
           '<div class="foot"><span class="days">' + (i.overdue ? 'Overdue · ' : '') + i.days + ' day' + (i.days === 1 ? '' : 's') + ' quiet</span>' +
           '<span class="moves"><button ' + prevDisabled + ' data-move="' + i.id + '" data-dir="-1" type="button" aria-label="Move back">←</button>' +
@@ -494,15 +574,17 @@
       return '<div class="kcol"><div class="kcol-head"><span>' + stage.label + '</span><span class="count">' + items.length + '</span></div>' + cards + '</div>';
     }).join('');
     document.querySelectorAll('[data-move]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
+      btn.addEventListener('click', async function () {
         var id = btn.getAttribute('data-move');
         var dir = parseInt(btn.getAttribute('data-dir'), 10);
         var item = state.items.find(function (i) { return i.id == id; });
         var newStage = item.stage + dir;
         if (newStage < 0 || newStage > 3) return;
+        var newKey = STAGES[newStage].key;
+        var res = await sb.from('email_threads').update({ stage: newKey }).eq('id', id);
+        if (res.error) { toast('Could not update: ' + res.error.message); return; }
         item.stage = newStage;
         if (newStage === 3) { item.overdue = false; item.days = 0; }
-        saveItems();
         renderKanban();
         renderOverview();
         toast(item.client + ' moved to ' + STAGES[newStage].label + '.');
@@ -538,15 +620,27 @@
     });
   }
 
-  function renderChart() {
-    var max = Math.max.apply(null, CHART_DATA.map(function (d) { return d[1]; }));
+  function renderReportChart() {
+    var months = [];
+    var now = new Date();
+    for (var i = 5; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ key: d.getFullYear() + '-' + d.getMonth(), label: d.toLocaleDateString(undefined, { month: 'short' }), total: 0 });
+    }
+    state.revenueEvents.forEach(function (r) {
+      var d = new Date(r.recovered_at);
+      var key = d.getFullYear() + '-' + d.getMonth();
+      var bucket = months.find(function (m) { return m.key === key; });
+      if (bucket) bucket.total += Number(r.amount);
+    });
+    var max = Math.max.apply(null, months.map(function (m) { return m.total; }).concat([1]));
     var ramp = ['#E4DFFB', '#CFC3F5', '#CFC3F5', '#B29EEE', '#B29EEE', 'var(--accent)'];
     var el = document.getElementById('reportBars');
-    el.innerHTML = CHART_DATA.map(function (d, idx) {
-      var pct = Math.round((d[1] / max) * 100);
+    el.innerHTML = months.map(function (m, idx) {
+      var pct = Math.round((m.total / max) * 100);
       return '<div class="bar-col">' +
-        '<div class="bar-el" data-month="' + d[0] + '" data-value="' + d[1] + '" style="height:' + pct + '%;background:' + ramp[idx] + ';"></div>' +
-        '<div class="bar-month">' + d[0] + '</div></div>';
+        '<div class="bar-el" data-month="' + m.label + '" data-value="' + m.total + '" style="height:' + Math.max(pct, 2) + '%;background:' + ramp[idx] + ';"></div>' +
+        '<div class="bar-month">' + m.label + '</div></div>';
     }).join('');
     var tip = document.createElement('div');
     tip.className = 'chart-tooltip';
@@ -567,15 +661,175 @@
     });
   }
 
-  function renderClientTable() {
+  function renderReportClientTable() {
+    var byClient = {};
+    state.revenueEvents.forEach(function (r) {
+      var name = (r.email_threads && r.email_threads.client_name) || 'Unknown';
+      byClient[name] = byClient[name] || { recovered: 0 };
+      byClient[name].recovered += Number(r.amount);
+    });
     var tbody = document.querySelector('#clientTable tbody');
-    tbody.innerHTML = CLIENT_REPORT.map(function (c) {
-      return '<tr><td>' + c.client + '</td><td class="num tnum">' + money(c.recovered) + '</td><td class="num tnum">' + c.reply + '%</td><td class="num tnum">' + c.days + '</td></tr>';
+    var clientNames = Object.keys(byClient);
+    if (!clientNames.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-hint">No revenue recovered yet.</td></tr>';
+      return;
+    }
+    clientNames.sort(function (a, b) { return byClient[b].recovered - byClient[a].recovered; });
+    tbody.innerHTML = clientNames.map(function (name) {
+      var clientItems = state.items.filter(function (i) { return i.client === name; });
+      var replied = clientItems.filter(function (i) { return i.stage >= 2; }).length;
+      var replyRate = clientItems.length ? Math.round((replied / clientItems.length) * 100) + '%' : '—';
+      return '<tr><td>' + escapeHtml(name) + '</td><td class="num tnum">' + money(byClient[name].recovered) + '</td>' +
+        '<td class="num tnum">' + replyRate + '</td><td class="num tnum">—</td></tr>';
     }).join('');
   }
 
-  function renderAll() { renderOverview(); renderKanban(); renderSequences(); renderChart(); renderClientTable(); }
-  renderAll();
+  function renderApprovals() {
+    var el = document.getElementById('approvalsList');
+    document.getElementById('approvalsMeta').textContent = state.drafts.length + ' pending';
+    if (!state.drafts.length) {
+      el.innerHTML = '<div class="draft-card"><div class="empty-hint">Nothing waiting on you right now.</div></div>';
+      return;
+    }
+    el.innerHTML = state.drafts.map(function (d) {
+      var thread = d.email_threads || {};
+      return '<div class="draft-card">' +
+        '<div class="draft-top"><div><h3>' + escapeHtml(thread.client_name || 'Unknown client') + ' — ' + escapeHtml(d.subject) + '</h3>' +
+        '<div class="reason">' + escapeHtml(d.draft_reason || '') + '</div></div>' +
+        '<div class="draft-actions">' +
+        '<button class="btn btn-sm" data-reject="' + d.id + '" type="button">Reject</button>' +
+        '<button class="btn btn-primary btn-sm" data-approve="' + d.id + '" type="button">Approve &amp; send</button>' +
+        '</div></div>' +
+        '<div class="draft-body">' + escapeHtml(d.body_text) + '</div>' +
+        '</div>';
+    }).join('');
+    document.querySelectorAll('[data-approve]').forEach(function (btn) {
+      btn.addEventListener('click', function () { approveDraft(btn.getAttribute('data-approve'), btn); });
+    });
+    document.querySelectorAll('[data-reject]').forEach(function (btn) {
+      btn.addEventListener('click', function () { rejectDraft(btn.getAttribute('data-reject'), btn); });
+    });
+  }
+
+  async function approveDraft(id, btn) {
+    btn.disabled = true;
+    var upd = await sb.from('followup_drafts').update({ status: 'approved', approved_at: new Date().toISOString() }).eq('id', id);
+    if (upd.error) { toast('Could not approve: ' + upd.error.message); btn.disabled = false; return; }
+    var sendRes = await sb.functions.invoke('send-approved-followup', { body: { draft_id: id } });
+    toast(sendRes.error ? 'Approved, but sending failed — check your Gmail connection in Settings.' : 'Follow-up sent.');
+    state.drafts = state.drafts.filter(function (d) { return d.id !== id; });
+    renderApprovals();
+    refreshApprovalBadge();
+    var itemsRes = await sb.from('email_threads').select('*').eq('is_active', true).order('created_at', { ascending: false });
+    state.items = (itemsRes.data || []).map(rowToItem);
+    renderOverview();
+    renderKanban();
+  }
+
+  async function rejectDraft(id, btn) {
+    btn.disabled = true;
+    var upd = await sb.from('followup_drafts').update({ status: 'rejected' }).eq('id', id);
+    if (upd.error) { toast('Could not reject: ' + upd.error.message); btn.disabled = false; return; }
+    state.drafts = state.drafts.filter(function (d) { return d.id !== id; });
+    renderApprovals();
+    refreshApprovalBadge();
+    toast('Draft rejected.');
+  }
+
+  async function refreshApprovalBadge() {
+    var res = await sb.from('followup_drafts').select('id', { count: 'exact', head: true }).eq('status', 'pending_approval');
+    var count = res.count || 0;
+    var badge = document.getElementById('approvalBadge');
+    if (count > 0) { badge.hidden = false; badge.textContent = count; } else { badge.hidden = true; }
+  }
+
+  function renderTrialBanner() {
+    var el = document.getElementById('trialBanner');
+    if (!state.profile || !state.profile.trial_ends_at) {
+      el.innerHTML = '<div class="settings-row"><span>Trial status unavailable.</span></div>';
+      return;
+    }
+    var endsAt = new Date(state.profile.trial_ends_at);
+    var daysLeft = Math.ceil((endsAt - new Date()) / 86400000);
+    var plan = state.profile.plan;
+    var pillClass = 'ok', label;
+    if (plan !== 'trial') {
+      label = plan.charAt(0).toUpperCase() + plan.slice(1) + ' plan';
+    } else if (daysLeft <= 0) {
+      pillClass = 'expired';
+      label = 'Trial ended';
+    } else if (daysLeft <= 2) {
+      pillClass = 'warn';
+      label = daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' left in trial';
+    } else {
+      label = daysLeft + ' days left in trial';
+    }
+    el.innerHTML = '<div class="settings-row"><span class="trial-pill ' + pillClass + '">' + escapeHtml(label) + '</span>' +
+      '<span style="font-size:12.5px;color:var(--ink-faint);">Trial ends ' + endsAt.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) + '</span></div>';
+  }
+
+  function renderGmailStatus() {
+    var el = document.getElementById('gmailStatus');
+    var conn = state.gmailConn;
+    if (conn && conn.status === 'connected') {
+      el.innerHTML = '<div><b>' + escapeHtml(conn.google_email || 'Connected') + '</b>' +
+        '<div style="font-size:12px;color:var(--ink-faint);margin-top:2px;">Connected' + (conn.last_synced_at ? ' · last scanned ' + new Date(conn.last_synced_at).toLocaleString() : ' · scan pending') + '</div></div>' +
+        '<button class="btn btn-sm" id="btnDisconnectGmail" type="button">Disconnect</button>';
+      document.getElementById('btnDisconnectGmail').addEventListener('click', disconnectGmail);
+    } else if (conn && conn.status === 'error') {
+      el.innerHTML = '<div><b>Connection error</b><div style="font-size:12px;color:var(--critical);margin-top:2px;">' + escapeHtml(conn.last_error || '') + '</div></div>' +
+        '<button class="btn btn-primary btn-sm" id="btnConnectGmail" type="button">Reconnect Gmail</button>';
+      document.getElementById('btnConnectGmail').addEventListener('click', connectGmail);
+    } else {
+      el.innerHTML = '<div><b>Not connected</b><div style="font-size:12px;color:var(--ink-faint);margin-top:2px;">Connect Gmail so Innovex can scan for stalled proposals and draft follow-ups.</div></div>' +
+        '<button class="btn btn-primary btn-sm" id="btnConnectGmail" type="button">Connect Gmail</button>';
+      document.getElementById('btnConnectGmail').addEventListener('click', connectGmail);
+    }
+  }
+
+  async function connectGmail() {
+    await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/dashboard.html',
+        scopes: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send',
+        queryParams: { access_type: 'offline', prompt: 'consent' }
+      }
+    });
+  }
+
+  async function disconnectGmail() {
+    var res = await sb.functions.invoke('disconnect-gmail', { body: {} });
+    if (res.error) { toast('Could not disconnect: ' + res.error.message); return; }
+    toast('Gmail disconnected.');
+    var connRes = await sb.from('gmail_connections').select('google_email, status, last_synced_at, last_error').maybeSingle();
+    state.gmailConn = connRes.data;
+    renderGmailStatus();
+  }
+
+  function populateSettingsForm(s) {
+    document.getElementById('setFirstDays').value = s.first_followup_days;
+    document.getElementById('setSecondDays').value = s.second_followup_days;
+    document.getElementById('setFinalDays').value = s.final_followup_days;
+    document.getElementById('setTone').value = s.tone;
+    document.getElementById('setSignature').value = s.signature_name || '';
+  }
+
+  document.getElementById('btnSaveSettings').addEventListener('click', async function () {
+    var payload = {
+      user_id: CURRENT_USER.id,
+      first_followup_days: parseInt(document.getElementById('setFirstDays').value, 10) || 3,
+      second_followup_days: parseInt(document.getElementById('setSecondDays').value, 10) || 7,
+      final_followup_days: parseInt(document.getElementById('setFinalDays').value, 10) || 14,
+      tone: document.getElementById('setTone').value,
+      signature_name: document.getElementById('setSignature').value.trim(),
+      updated_at: new Date().toISOString()
+    };
+    var res = await sb.from('user_settings').upsert(payload, { onConflict: 'user_id' });
+    if (res.error) { toast('Could not save: ' + res.error.message); return; }
+    state.settings = payload;
+    toast('Settings saved.');
+  });
 
   document.querySelectorAll('.navitem[data-tab]').forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -614,15 +868,24 @@
 
   var addForm = document.getElementById('addForm');
   document.getElementById('btnAddItem').addEventListener('click', function () { addForm.classList.toggle('open'); });
-  document.getElementById('addSubmit').addEventListener('click', function () {
+  document.getElementById('addSubmit').addEventListener('click', async function () {
     var client = document.getElementById('addClient').value.trim();
     var desc = document.getElementById('addDesc').value.trim();
     var amount = parseFloat(document.getElementById('addAmount').value);
     var kind = document.getElementById('addKind').value;
     if (!client || !amount || amount <= 0) { toast('Add a client name and an amount first.'); return; }
-    var nextId = state.items.reduce(function (m, i) { return Math.max(m, i.id); }, 0) + 1;
-    state.items.push({ id: nextId, client: client, kind: kind, desc: desc || (kind === 'invoice' ? 'New invoice' : 'New proposal'), amount: amount, days: 0, stage: 0, overdue: false });
-    saveItems();
+    var res = await sb.from('email_threads').insert({
+      user_id: CURRENT_USER.id,
+      client_name: client,
+      kind: kind,
+      subject: desc || (kind === 'invoice' ? 'New invoice' : 'New proposal'),
+      detected_category: kind === 'invoice' ? 'invoice' : 'other',
+      amount: amount,
+      stage: 'sent',
+      last_outbound_at: new Date().toISOString()
+    }).select().single();
+    if (res.error) { toast('Could not add item: ' + res.error.message); return; }
+    state.items.unshift(rowToItem(res.data));
     document.getElementById('addClient').value = '';
     document.getElementById('addDesc').value = '';
     document.getElementById('addAmount').value = '';
@@ -631,6 +894,81 @@
     renderOverview();
     toast(client + ' added to Sent.');
   });
+
+  async function loadEverything() {
+    var itemsRes = await sb.from('email_threads').select('*').eq('is_active', true).order('created_at', { ascending: false });
+    state.items = (itemsRes.data || []).map(rowToItem);
+
+    var seqRaw = null;
+    try { seqRaw = JSON.parse(localStorage.getItem('innovex_dash_seqs_v1')); } catch (e) {}
+    state.seqs = (seqRaw && seqRaw.length) ? seqRaw : DEFAULT_SEQS.slice();
+
+    var draftsRes = await sb.from('followup_drafts').select('*, email_threads(client_name, subject, kind)').eq('status', 'pending_approval').order('created_at', { ascending: true });
+    state.drafts = draftsRes.data || [];
+
+    var revRes = await sb.from('revenue_events').select('amount, recovered_at, email_threads(created_at, client_name)');
+    state.revenueEvents = revRes.data || [];
+
+    var settingsRes = await sb.from('user_settings').select('*').maybeSingle();
+    state.settings = settingsRes.data || { first_followup_days: 3, second_followup_days: 7, final_followup_days: 14, tone: 'professional', signature_name: '' };
+
+    var profileRes = await sb.from('profiles').select('trial_ends_at, plan').maybeSingle();
+    state.profile = profileRes.data;
+
+    var connRes = await sb.from('gmail_connections').select('google_email, status, last_synced_at, last_error').maybeSingle();
+    state.gmailConn = connRes.data;
+
+    renderOverview();
+    renderKanban();
+    renderSequences();
+    renderApprovals();
+    renderReportChart();
+    renderReportClientTable();
+    renderTrialBanner();
+    renderGmailStatus();
+    populateSettingsForm(state.settings);
+    refreshApprovalBadge();
+  }
+
+  (async function init() {
+    var sessionRes = await sb.auth.getSession();
+    var session = sessionRes.data && sessionRes.data.session;
+    if (!session) { window.location.href = 'index.html'; return; }
+    CURRENT_USER = session.user;
+    var whoName = document.querySelector('.side-foot .who b');
+    var whoAvatar = document.querySelector('.side-foot .avatar');
+    var displayName = (CURRENT_USER.user_metadata && CURRENT_USER.user_metadata.full_name) || CURRENT_USER.email;
+    if (whoName) whoName.textContent = displayName;
+    if (whoAvatar) whoAvatar.textContent = (displayName || '?').slice(0, 2).toUpperCase();
+
+    sb.auth.onAuthStateChange(function (event, newSession) {
+      if (!newSession || !newSession.provider_refresh_token) return;
+      var flagKey = 'innovex_gmail_captured_' + newSession.user.id;
+      var already = false;
+      try { already = sessionStorage.getItem(flagKey) === '1'; } catch (e) {}
+      if (already) return;
+      try { sessionStorage.setItem(flagKey, '1'); } catch (e) {}
+      sb.functions.invoke('capture-gmail-token', { body: { provider_refresh_token: newSession.provider_refresh_token } })
+        .then(function (res) {
+          if (res.error) { toast('Gmail connection failed to save: ' + res.error.message); return; }
+          toast('Gmail connected.');
+          sb.from('gmail_connections').select('google_email, status, last_synced_at, last_error').maybeSingle()
+            .then(function (r) { state.gmailConn = r.data; renderGmailStatus(); });
+        });
+    });
+
+    sb.channel('followup_drafts_rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'followup_drafts' }, function () {
+        refreshApprovalBadge();
+        if (document.getElementById('tab-approvals').classList.contains('active')) {
+          sb.from('followup_drafts').select('*, email_threads(client_name, subject, kind)').eq('status', 'pending_approval').order('created_at', { ascending: true })
+            .then(function (res) { state.drafts = res.data || []; renderApprovals(); });
+        }
+      })
+      .subscribe();
+
+    await loadEverything();
+  })();
 </script>
 </body>
 </html>
