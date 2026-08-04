@@ -875,14 +875,24 @@
   }
 
   async function connectGmail() {
-    await sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/dashboard.html',
-        scopes: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send',
-        queryParams: { access_type: 'offline', prompt: 'consent' }
+    try {
+      var res = await sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/dashboard.html',
+          scopes: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send',
+          queryParams: { access_type: 'offline', prompt: 'consent' }
+        }
+      });
+      if (res.error) {
+        console.error('[Innovex] connectGmail failed:', res.error);
+        toast('Could not start Google sign-in: ' + res.error.message);
       }
-    });
+      // On success the browser navigates away to Google immediately -- nothing else runs here.
+    } catch (err) {
+      console.error('[Innovex] connectGmail threw:', err);
+      toast('Could not start Google sign-in — check the console for details.');
+    }
   }
 
   async function disconnectGmail() {
@@ -935,7 +945,17 @@
     if (reportsTab && !reportsTab.classList.contains('active')) reportsTab.click();
     setTimeout(function () { window.print(); }, 50);
   });
-  document.getElementById('btnNewSeq').addEventListener('click', function () { toast('Custom sequences are coming soon.'); });
+  document.getElementById('btnNewSeq').addEventListener('click', function () {
+    var sequencesTab = document.querySelector('.navitem[data-tab="sequences"]');
+    if (sequencesTab && !sequencesTab.classList.contains('active')) sequencesTab.click();
+    var nextId = state.seqs.reduce(function (m, s) { return Math.max(m, s.id); }, 0) + 1;
+    var seq = { id: nextId, name: 'New sequence', desc: '', active: false, steps: [['Day 0', 'Sent']] };
+    state.seqs.push(seq);
+    saveSeqs();
+    editingSeqId = seq.id;
+    editingSeqDraft = { id: seq.id, name: seq.name, desc: seq.desc, active: seq.active, steps: seq.steps.map(function (st) { return st.slice(); }) };
+    renderSequences();
+  });
 
   var THEME_KEY = 'innovex_theme';
   function isDarkActive() {
