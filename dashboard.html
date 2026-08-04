@@ -442,6 +442,18 @@
         <div class="card" id="trialBanner" style="margin-bottom:16px;"></div>
 
         <div class="card" style="margin-bottom:16px;">
+          <div class="card-head"><h2>Team</h2><button class="btn btn-sm" id="btnInviteTeammate" type="button" hidden>Invite teammate</button></div>
+          <div id="teamList"></div>
+          <div id="inviteLinkBox" class="settings-row" hidden style="flex-direction:column;align-items:flex-start;gap:8px;">
+            <span style="font-size:12.5px;color:var(--ink-faint);">Share this link — it's good for 14 days and works once:</span>
+            <div style="display:flex;gap:8px;width:100%;">
+              <input type="text" id="inviteLinkInput" readonly style="flex:1;padding:8px 10px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);font-size:12.5px;" />
+              <button class="btn btn-sm" id="btnCopyInviteLink" type="button">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
           <div class="card-head"><h2>Gmail connection</h2></div>
           <div id="gmailStatus" class="settings-row"></div>
         </div>
@@ -495,8 +507,10 @@
     });
   }
 
-  var state = { items: [], seqs: null, drafts: [], revenueEvents: [], settings: null, profile: null, gmailConn: null };
+  var state = { items: [], seqs: null, drafts: [], revenueEvents: [], settings: null, workspace: null, gmailConn: null };
   var CURRENT_USER = null;
+  var CURRENT_WORKSPACE_ID = null;
+  var CURRENT_ROLE = null;
 
   function saveSeqs() { try { localStorage.setItem('innovex_dash_seqs_v1', JSON.stringify(state.seqs)); } catch (e) {} }
 
@@ -832,13 +846,13 @@
 
   function renderTrialBanner() {
     var el = document.getElementById('trialBanner');
-    if (!state.profile || !state.profile.trial_ends_at) {
+    if (!state.workspace || !state.workspace.trial_ends_at) {
       el.innerHTML = '<div class="settings-row"><span>Trial status unavailable.</span></div>';
       return;
     }
-    var endsAt = new Date(state.profile.trial_ends_at);
+    var endsAt = new Date(state.workspace.trial_ends_at);
     var daysLeft = Math.ceil((endsAt - new Date()) / 86400000);
-    var plan = state.profile.plan;
+    var plan = state.workspace.plan;
     var pillClass = 'ok', label;
     if (plan !== 'trial') {
       label = plan.charAt(0).toUpperCase() + plan.slice(1) + ' plan';
@@ -855,21 +869,53 @@
       '<span style="font-size:12.5px;color:var(--ink-faint);">Trial ends ' + endsAt.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) + '</span></div>';
   }
 
+  async function renderTeam() {
+    var el = document.getElementById('teamList');
+    var res = await sb.rpc('get_workspace_roster');
+    if (res.error) {
+      el.innerHTML = '<div class="settings-row"><span>Could not load the team list.</span></div>';
+      return;
+    }
+    var rows = (res.data || []).map(function (m) {
+      var label = m.full_name || m.email;
+      var youTag = m.user_id === CURRENT_USER.id ? ' (you)' : '';
+      return '<div class="settings-row"><span>' + escapeHtml(label) + escapeHtml(youTag) + '</span>' +
+        '<span class="chip ' + (m.role === 'owner' ? 'good' : 'cold') + '">' + (m.role === 'owner' ? 'Design Partner' : 'Team member') + '</span></div>';
+    }).join('');
+    el.innerHTML = rows || '<div class="settings-row"><span>Just you so far.</span></div>';
+  }
+
+  document.getElementById('btnInviteTeammate').addEventListener('click', async function () {
+    var res = await sb.from('workspace_invites').insert({ workspace_id: CURRENT_WORKSPACE_ID, role: 'member' }).select('token').single();
+    if (res.error) { toast('Could not create invite: ' + res.error.message); return; }
+    var link = window.location.origin + '/index.html?invite=' + encodeURIComponent(res.data.token);
+    document.getElementById('inviteLinkInput').value = link;
+    document.getElementById('inviteLinkBox').hidden = false;
+  });
+
+  document.getElementById('btnCopyInviteLink').addEventListener('click', function () {
+    var input = document.getElementById('inviteLinkInput');
+    input.select();
+    navigator.clipboard && navigator.clipboard.writeText(input.value).then(function () { toast('Invite link copied.'); }).catch(function () { toast('Could not copy — select and copy manually.'); });
+  });
+
   function renderGmailStatus() {
     var el = document.getElementById('gmailStatus');
     var conn = state.gmailConn;
+    var isOwner = CURRENT_ROLE === 'owner';
+    var ownerNote = isOwner ? '' : '<div style="font-size:11.5px;color:var(--ink-faint);margin-top:4px;">Only the workspace owner can manage this.</div>';
     if (conn && conn.status === 'connected') {
       el.innerHTML = '<div><b>' + escapeHtml(conn.google_email || 'Connected') + '</b>' +
-        '<div style="font-size:12px;color:var(--ink-faint);margin-top:2px;">Connected' + (conn.last_synced_at ? ' · last scanned ' + new Date(conn.last_synced_at).toLocaleString() : ' · scan pending') + '</div></div>' +
-        '<button class="btn btn-sm" id="btnDisconnectGmail" type="button">Disconnect</button>';
+        '<div style="font-size:12px;color:var(--ink-faint);margin-top:2px;">Connected' + (conn.last_synced_at ? ' · last scanned ' + new Date(conn.last_synced_at).toLocaleString() : ' · scan pending') + '</div>' + ownerNote + '</div>' +
+        '<button class="btn btn-sm" id="btnDisconnectGmail" type="button"' + (isOwner ? '' : ' disabled') + '>Disconnect</button>';
       document.getElementById('btnDisconnectGmail').addEventListener('click', disconnectGmail);
     } else if (conn && conn.status === 'error') {
-      el.innerHTML = '<div><b>Connection error</b><div style="font-size:12px;color:var(--critical);margin-top:2px;">' + escapeHtml(conn.last_error || '') + '</div></div>' +
-        '<button class="btn btn-primary btn-sm" id="btnConnectGmail" type="button">Reconnect Gmail</button>';
+      el.innerHTML = '<div><b>Connection error</b><div style="font-size:12px;color:var(--critical);margin-top:2px;">' + escapeHtml(conn.last_error || '') + '</div>' + ownerNote + '</div>' +
+        '<button class="btn btn-primary btn-sm" id="btnConnectGmail" type="button"' + (isOwner ? '' : ' disabled') + '>Reconnect Gmail</button>';
       document.getElementById('btnConnectGmail').addEventListener('click', connectGmail);
     } else {
-      el.innerHTML = '<div><b>Not connected</b><div style="font-size:12px;color:var(--ink-faint);margin-top:2px;">Connect Gmail so Innovex can scan for stalled proposals and draft follow-ups.</div></div>' +
-        '<button class="btn btn-primary btn-sm" id="btnConnectGmail" type="button">Connect Gmail</button>';
+      el.innerHTML = '<div><b>Not connected</b><div style="font-size:12px;color:var(--ink-faint);margin-top:2px;">Connect Gmail so Innovex can scan for stalled proposals and draft follow-ups.</div>' + ownerNote + '</div>' +
+        '<button class="btn btn-primary btn-sm" id="btnConnectGmail" type="button"' + (isOwner ? '' : ' disabled') + '>Connect Gmail</button>';
       document.getElementById('btnConnectGmail').addEventListener('click', connectGmail);
     }
   }
@@ -913,8 +959,9 @@
   }
 
   document.getElementById('btnSaveSettings').addEventListener('click', async function () {
+    if (CURRENT_ROLE !== 'owner') { toast('Only the workspace owner can change these settings.'); return; }
     var payload = {
-      user_id: CURRENT_USER.id,
+      workspace_id: CURRENT_WORKSPACE_ID,
       first_followup_days: parseInt(document.getElementById('setFirstDays').value, 10) || 3,
       second_followup_days: parseInt(document.getElementById('setSecondDays').value, 10) || 7,
       final_followup_days: parseInt(document.getElementById('setFinalDays').value, 10) || 14,
@@ -922,7 +969,7 @@
       signature_name: document.getElementById('setSignature').value.trim(),
       updated_at: new Date().toISOString()
     };
-    var res = await sb.from('user_settings').upsert(payload, { onConflict: 'user_id' });
+    var res = await sb.from('user_settings').upsert(payload, { onConflict: 'workspace_id' });
     if (res.error) { toast('Could not save: ' + res.error.message); return; }
     state.settings = payload;
     toast('Settings saved.');
@@ -986,6 +1033,7 @@
     var kind = document.getElementById('addKind').value;
     if (!client || !amount || amount <= 0) { toast('Add a client name and an amount first.'); return; }
     var res = await sb.from('email_threads').insert({
+      workspace_id: CURRENT_WORKSPACE_ID,
       user_id: CURRENT_USER.id,
       client_name: client,
       kind: kind,
@@ -1047,8 +1095,8 @@
       return sb.from('user_settings').select('*').maybeSingle();
     }, null) || { first_followup_days: 3, second_followup_days: 7, final_followup_days: 14, tone: 'professional', signature_name: '' };
 
-    state.profile = await safeFetch('load profile', function () {
-      return sb.from('profiles').select('trial_ends_at, plan').maybeSingle();
+    state.workspace = await safeFetch('load workspace', function () {
+      return sb.from('workspaces').select('id, name, plan, trial_ends_at').maybeSingle();
     }, null);
 
     state.gmailConn = await safeFetch('load gmail connection', function () {
@@ -1062,6 +1110,7 @@
     try { renderReportChart(); } catch (e) { console.error('[Innovex] renderReportChart failed:', e); }
     try { renderReportClientTable(); } catch (e) { console.error('[Innovex] renderReportClientTable failed:', e); }
     try { renderTrialBanner(); } catch (e) { console.error('[Innovex] renderTrialBanner failed:', e); }
+    try { renderTeam(); } catch (e) { console.error('[Innovex] renderTeam failed:', e); }
     try { renderGmailStatus(); } catch (e) { console.error('[Innovex] renderGmailStatus failed:', e); }
     try { populateSettingsForm(state.settings); } catch (e) { console.error('[Innovex] populateSettingsForm failed:', e); }
     try { refreshApprovalBadge(); } catch (e) { console.error('[Innovex] refreshApprovalBadge failed:', e); }
@@ -1077,9 +1126,32 @@
       CURRENT_USER = session.user;
       var whoName = document.querySelector('.side-foot .who b');
       var whoAvatar = document.querySelector('.side-foot .avatar');
+      var whoRole = document.querySelector('.side-foot .who span');
       var displayName = (CURRENT_USER.user_metadata && CURRENT_USER.user_metadata.full_name) || CURRENT_USER.email;
       if (whoName) whoName.textContent = displayName;
       if (whoAvatar) whoAvatar.textContent = (displayName || '?').slice(0, 2).toUpperCase();
+
+      var memberRes = await sb.from('workspace_members').select('workspace_id, role').eq('user_id', CURRENT_USER.id).maybeSingle();
+      if (memberRes.error || !memberRes.data) {
+        console.error('[Innovex] Could not resolve workspace membership:', memberRes.error);
+        toast('Could not load your workspace — try reloading.');
+      } else {
+        CURRENT_WORKSPACE_ID = memberRes.data.workspace_id;
+        CURRENT_ROLE = memberRes.data.role;
+        if (whoRole) whoRole.textContent = CURRENT_ROLE === 'owner' ? 'Design Partner' : 'Team member';
+      }
+
+      var ownerOnlyEls = [
+        document.getElementById('btnSaveSettings'),
+        document.getElementById('setFirstDays'), document.getElementById('setSecondDays'),
+        document.getElementById('setFinalDays'), document.getElementById('setTone'), document.getElementById('setSignature')
+      ];
+      if (CURRENT_ROLE !== 'owner') {
+        ownerOnlyEls.forEach(function (el) { if (el) el.disabled = true; });
+      } else {
+        var inviteBtn = document.getElementById('btnInviteTeammate');
+        if (inviteBtn) inviteBtn.hidden = false;
+      }
 
       sb.auth.onAuthStateChange(function (event, newSession) {
         if (!newSession || !newSession.provider_refresh_token) return;

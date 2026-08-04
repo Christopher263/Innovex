@@ -1469,6 +1469,7 @@
 
   /* ---------- signup modal ---------- */
   var DASHBOARD_URL = 'dashboard.html';
+  var INVITE_TOKEN = new URLSearchParams(window.location.search).get('invite');
   var overlay = document.getElementById('signupOverlay');
   var viewAuth = document.getElementById('viewAuth');
   var viewSuccess = document.getElementById('viewSuccess');
@@ -1559,10 +1560,12 @@
     authSubmit.disabled = true;
     try {
       if (authMode === 'signup') {
+        var signUpOptions = { data: { full_name: name } };
+        if (INVITE_TOKEN) signUpOptions.data.invite_token = INVITE_TOKEN;
         var signUpResult = await sb.auth.signUp({
           email: email,
           password: password,
-          options: { data: { full_name: name } }
+          options: signUpOptions
         });
         if (signUpResult.error) {
           errorEl.textContent = signUpResult.error.message;
@@ -1575,6 +1578,7 @@
           setAuthMode('signin');
           return;
         }
+        if (INVITE_TOKEN) { window.location.href = DASHBOARD_URL; return; }
         await showTrialSuccess(name, email);
       } else {
         var signInResult = await sb.auth.signInWithPassword({ email: email, password: password });
@@ -1582,6 +1586,15 @@
           errorEl.textContent = signInResult.error.message;
           errorEl.classList.add('show');
           return;
+        }
+        if (INVITE_TOKEN) {
+          var acceptRes = await sb.rpc('accept_workspace_invite', { p_token: INVITE_TOKEN });
+          if (acceptRes.error) {
+            errorEl.textContent = acceptRes.error.message;
+            errorEl.classList.add('show');
+            authSubmit.disabled = false;
+            return;
+          }
         }
         window.location.href = DASHBOARD_URL;
       }
