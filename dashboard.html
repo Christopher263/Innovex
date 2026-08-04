@@ -309,6 +309,7 @@
   </aside>
 
   <main class="main">
+    <div class="card" id="dashLoading" hidden style="margin:0 0 16px;"><div class="empty-hint">Loading your dashboard…</div></div>
     <!-- OVERVIEW -->
     <section class="tab-panel active" id="tab-overview">
       <div class="topbar">
@@ -895,79 +896,125 @@
     toast(client + ' added to Sent.');
   });
 
+  // Each fetch fails independently so one bad query (RLS timing, a dropped
+  // connection, a table that isn't ready yet) can't blank out the whole dashboard.
+  async function safeFetch(label, fn, fallback) {
+    try {
+      var res = await fn();
+      if (res && res.error) {
+        console.error('[Innovex] ' + label + ' failed:', res.error);
+        return fallback;
+      }
+      return (res && res.data != null) ? res.data : fallback;
+    } catch (err) {
+      console.error('[Innovex] ' + label + ' threw:', err);
+      return fallback;
+    }
+  }
+
   async function loadEverything() {
-    var itemsRes = await sb.from('email_threads').select('*').eq('is_active', true).order('created_at', { ascending: false });
-    state.items = (itemsRes.data || []).map(rowToItem);
+    var loadingEl = document.getElementById('dashLoading');
+    if (loadingEl) loadingEl.hidden = false;
+
+    var itemsData = await safeFetch('load pipeline items', function () {
+      return sb.from('email_threads').select('*').eq('is_active', true).order('created_at', { ascending: false });
+    }, []);
+    state.items = itemsData.map(rowToItem);
 
     var seqRaw = null;
     try { seqRaw = JSON.parse(localStorage.getItem('innovex_dash_seqs_v1')); } catch (e) {}
     state.seqs = (seqRaw && seqRaw.length) ? seqRaw : DEFAULT_SEQS.slice();
 
-    var draftsRes = await sb.from('followup_drafts').select('*, email_threads(client_name, subject, kind)').eq('status', 'pending_approval').order('created_at', { ascending: true });
-    state.drafts = draftsRes.data || [];
+    state.drafts = await safeFetch('load approval queue', function () {
+      return sb.from('followup_drafts').select('*, email_threads(client_name, subject, kind)').eq('status', 'pending_approval').order('created_at', { ascending: true });
+    }, []);
 
-    var revRes = await sb.from('revenue_events').select('amount, recovered_at, email_threads(created_at, client_name)');
-    state.revenueEvents = revRes.data || [];
+    state.revenueEvents = await safeFetch('load revenue events', function () {
+      return sb.from('revenue_events').select('amount, recovered_at, email_threads(created_at, client_name)');
+    }, []);
 
-    var settingsRes = await sb.from('user_settings').select('*').maybeSingle();
-    state.settings = settingsRes.data || { first_followup_days: 3, second_followup_days: 7, final_followup_days: 14, tone: 'professional', signature_name: '' };
+    state.settings = await safeFetch('load settings', function () {
+      return sb.from('user_settings').select('*').maybeSingle();
+    }, null) || { first_followup_days: 3, second_followup_days: 7, final_followup_days: 14, tone: 'professional', signature_name: '' };
 
-    var profileRes = await sb.from('profiles').select('trial_ends_at, plan').maybeSingle();
-    state.profile = profileRes.data;
+    state.profile = await safeFetch('load profile', function () {
+      return sb.from('profiles').select('trial_ends_at, plan').maybeSingle();
+    }, null);
 
-    var connRes = await sb.from('gmail_connections').select('google_email, status, last_synced_at, last_error').maybeSingle();
-    state.gmailConn = connRes.data;
+    state.gmailConn = await safeFetch('load gmail connection', function () {
+      return sb.from('gmail_connections').select('google_email, status, last_synced_at, last_error').maybeSingle();
+    }, null);
 
-    renderOverview();
-    renderKanban();
-    renderSequences();
-    renderApprovals();
-    renderReportChart();
-    renderReportClientTable();
-    renderTrialBanner();
-    renderGmailStatus();
-    populateSettingsForm(state.settings);
-    refreshApprovalBadge();
+    try { renderOverview(); } catch (e) { console.error('[Innovex] renderOverview failed:', e); }
+    try { renderKanban(); } catch (e) { console.error('[Innovex] renderKanban failed:', e); }
+    try { renderSequences(); } catch (e) { console.error('[Innovex] renderSequences failed:', e); }
+    try { renderApprovals(); } catch (e) { console.error('[Innovex] renderApprovals failed:', e); }
+    try { renderReportChart(); } catch (e) { console.error('[Innovex] renderReportChart failed:', e); }
+    try { renderReportClientTable(); } catch (e) { console.error('[Innovex] renderReportClientTable failed:', e); }
+    try { renderTrialBanner(); } catch (e) { console.error('[Innovex] renderTrialBanner failed:', e); }
+    try { renderGmailStatus(); } catch (e) { console.error('[Innovex] renderGmailStatus failed:', e); }
+    try { populateSettingsForm(state.settings); } catch (e) { console.error('[Innovex] populateSettingsForm failed:', e); }
+    try { refreshApprovalBadge(); } catch (e) { console.error('[Innovex] refreshApprovalBadge failed:', e); }
+
+    if (loadingEl) loadingEl.hidden = true;
   }
 
   (async function init() {
-    var sessionRes = await sb.auth.getSession();
-    var session = sessionRes.data && sessionRes.data.session;
-    if (!session) { window.location.href = 'index.html'; return; }
-    CURRENT_USER = session.user;
-    var whoName = document.querySelector('.side-foot .who b');
-    var whoAvatar = document.querySelector('.side-foot .avatar');
-    var displayName = (CURRENT_USER.user_metadata && CURRENT_USER.user_metadata.full_name) || CURRENT_USER.email;
-    if (whoName) whoName.textContent = displayName;
-    if (whoAvatar) whoAvatar.textContent = (displayName || '?').slice(0, 2).toUpperCase();
+    try {
+      var sessionRes = await sb.auth.getSession();
+      var session = sessionRes.data && sessionRes.data.session;
+      if (!session) { window.location.href = 'index.html'; return; }
+      CURRENT_USER = session.user;
+      var whoName = document.querySelector('.side-foot .who b');
+      var whoAvatar = document.querySelector('.side-foot .avatar');
+      var displayName = (CURRENT_USER.user_metadata && CURRENT_USER.user_metadata.full_name) || CURRENT_USER.email;
+      if (whoName) whoName.textContent = displayName;
+      if (whoAvatar) whoAvatar.textContent = (displayName || '?').slice(0, 2).toUpperCase();
 
-    sb.auth.onAuthStateChange(function (event, newSession) {
-      if (!newSession || !newSession.provider_refresh_token) return;
-      var flagKey = 'innovex_gmail_captured_' + newSession.user.id;
-      var already = false;
-      try { already = sessionStorage.getItem(flagKey) === '1'; } catch (e) {}
-      if (already) return;
-      try { sessionStorage.setItem(flagKey, '1'); } catch (e) {}
-      sb.functions.invoke('capture-gmail-token', { body: { provider_refresh_token: newSession.provider_refresh_token } })
-        .then(function (res) {
-          if (res.error) { toast('Gmail connection failed to save: ' + res.error.message); return; }
-          toast('Gmail connected.');
-          sb.from('gmail_connections').select('google_email, status, last_synced_at, last_error').maybeSingle()
-            .then(function (r) { state.gmailConn = r.data; renderGmailStatus(); });
-        });
-    });
+      sb.auth.onAuthStateChange(function (event, newSession) {
+        if (!newSession || !newSession.provider_refresh_token) return;
+        var flagKey = 'innovex_gmail_captured_' + newSession.user.id;
+        var already = false;
+        try { already = sessionStorage.getItem(flagKey) === '1'; } catch (e) {}
+        if (already) return;
+        try { sessionStorage.setItem(flagKey, '1'); } catch (e) {}
+        sb.functions.invoke('capture-gmail-token', { body: { provider_refresh_token: newSession.provider_refresh_token } })
+          .then(function (res) {
+            if (res.error) { toast('Gmail connection failed to save: ' + res.error.message); return; }
+            toast('Gmail connected.');
+            sb.from('gmail_connections').select('google_email, status, last_synced_at, last_error').maybeSingle()
+              .then(function (r) { state.gmailConn = r.data; renderGmailStatus(); })
+              .catch(function (e) { console.error('[Innovex] gmail_connections refresh failed:', e); });
+          })
+          .catch(function (e) { console.error('[Innovex] capture-gmail-token invoke failed:', e); });
+      });
 
-    sb.channel('followup_drafts_rt')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'followup_drafts' }, function () {
-        refreshApprovalBadge();
-        if (document.getElementById('tab-approvals').classList.contains('active')) {
-          sb.from('followup_drafts').select('*, email_threads(client_name, subject, kind)').eq('status', 'pending_approval').order('created_at', { ascending: true })
-            .then(function (res) { state.drafts = res.data || []; renderApprovals(); });
-        }
-      })
-      .subscribe();
+      try {
+        sb.channel('followup_drafts_rt')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'followup_drafts' }, function () {
+            refreshApprovalBadge().catch(function (e) { console.error('[Innovex] badge refresh failed:', e); });
+            var tab = document.getElementById('tab-approvals');
+            if (tab && tab.classList.contains('active')) {
+              sb.from('followup_drafts').select('*, email_threads(client_name, subject, kind)').eq('status', 'pending_approval').order('created_at', { ascending: true })
+                .then(function (res) { state.drafts = res.data || []; renderApprovals(); })
+                .catch(function (e) { console.error('[Innovex] approvals refresh failed:', e); });
+            }
+          })
+          .subscribe();
+      } catch (e) {
+        console.error('[Innovex] realtime subscribe failed (non-fatal):', e);
+      }
 
-    await loadEverything();
+      await loadEverything();
+    } catch (err) {
+      console.error('[Innovex] Dashboard failed to initialize:', err);
+      var loadingEl = document.getElementById('dashLoading');
+      if (loadingEl) {
+        loadingEl.hidden = false;
+        loadingEl.innerHTML = '<div class="empty-hint">Something went wrong loading your dashboard. <button class="btn btn-sm" onclick="window.location.reload()" type="button">Retry</button></div>';
+      }
+      toast('Dashboard failed to load fully — check the console for details.');
+    }
   })();
 </script>
 </body>
