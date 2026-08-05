@@ -229,6 +229,18 @@
   .proof p { margin: 0; font-size: 13px; color: var(--ink-faint); letter-spacing: 0.02em; }
   .proof .tags { display: flex; gap: 10px; flex-wrap: wrap; }
   .proof .tag { font-size: 13px; padding: 7px 14px; border: 1px solid var(--border-strong); border-radius: 999px; color: var(--ink-soft); }
+  .sticky-mobile-cta { display: none; }
+  @media (max-width: 640px) {
+    .sticky-mobile-cta {
+      display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+      padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+    }
+    .sticky-mobile-cta .btn { width: 100%; }
+    body { padding-bottom: 66px; }
+  }
   .founder-note { margin: 30px 0 0; padding: 22px 24px; border-left: 3px solid var(--accent); background: var(--surface-sunk); border-radius: 0 10px 10px 0; }
   .founder-note p { margin: 0; font-size: 15px; color: var(--ink); font-style: normal; max-width: 62ch; }
   .founder-note cite { display: block; margin-top: 10px; font-style: normal; font-size: 13px; color: var(--ink-faint); font-weight: 600; }
@@ -520,7 +532,7 @@
         <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
         <a href="#faq" data-i18n="nav.faq">FAQ</a>
       </div>
-      <div class="lang-dd" id="langDd">
+      <div class="lang-dd" id="langDd" hidden>
         <button type="button" class="lang-dd-btn" id="langDdBtn" aria-haspopup="true" aria-expanded="false">
           <span id="langDdLabel">EN</span>
           <svg viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -552,10 +564,10 @@
         <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12h2.6M18.9 12h2.6M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
         <svg class="icon-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5z"/></svg>
       </button>
-      <a class="btn btn-primary btn-sm" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20%E2%80%94%20early%20access&body=Firm%20name%3A%0AWhat%20we%20do%3A%0AHow%20many%20open%20proposals%2Finvoices%20are%20we%20juggling%20right%20now%3A">
-        <span class="cta-full" data-i18n="nav.cta">Apply for early access</span>
-        <span class="cta-short" data-i18n="nav.ctaShort">Apply</span>
-      </a>
+      <button type="button" class="btn btn-primary btn-sm" id="navTrialBtn" data-cta="nav_start_trial">
+        <span class="cta-full" data-i18n="nav.cta">Start free trial</span>
+        <span class="cta-short" data-i18n="nav.ctaShort">Trial</span>
+      </button>
     </nav>
   </div>
 </header>
@@ -572,17 +584,14 @@
           <button type="button" class="btn btn-primary btn-lg" id="heroTrialBtn" data-i18n="hero.ctaTrial" data-cta="hero_start_trial">Start your 7-day free trial — no credit card required</button>
           <a class="btn btn-ghost" href="#product" data-i18n="hero.cta2" data-cta="hero_see_how">See how it works</a>
         </div>
-        <p class="hero-note" style="margin-top:10px;">
-          <a href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20%E2%80%94%20early%20access&body=Firm%20name%3A%0AWhat%20we%20do%3A%0AHow%20many%20open%20proposals%2Finvoices%20are%20we%20juggling%20right%20now%3A" style="text-decoration:underline;" data-i18n="nav.cta" data-cta="hero_apply_early_access">Apply for early access</a>
-        </p>
         <div class="hero-trust" data-reveal>
-          <p class="hero-trustline" data-i18n="hero.trust">Built for boutique agencies, consultants, and professional service firms. Now onboarding founding teams.</p>
+          <p class="hero-trustline" data-i18n="hero.trust">Built for boutique agencies, consultants, and professional service firms. Now onboarding a limited group of founding firms.</p>
           <div class="hero-trust-row">
             <span data-i18n="hero.trust1">No card required to start</span>
             <span aria-hidden="true">·</span>
             <span data-i18n="hero.trust2">Approve every message before it sends</span>
             <span aria-hidden="true">·</span>
-            <span data-i18n="hero.trust3">Founding rate locked for life</span>
+            <span data-i18n="hero.trust3">Founding rate locked for 12 months</span>
           </div>
         </div>
       </div>
@@ -926,7 +935,7 @@
       <div class="section-head" style="margin-left:auto;margin-right:auto;text-align:center;" data-reveal>
         <span class="eyebrow" style="justify-content:center;width:100%;" data-i18n="pricing.eyebrow">Pricing</span>
         <h2 style="margin-top:14px;" data-i18n="pricing.h2">Priced for firms doing real revenue — not race-to-the-bottom freelancer tools.</h2>
-        <p style="margin-left:auto;margin-right:auto;" data-i18n="pricing.p">We're onboarding a limited number of design partners at these rates, locked in for life.</p>
+        <p style="margin-left:auto;margin-right:auto;" data-i18n="pricing.p">We're onboarding a limited number of design partners at these rates, locked for 12 months.</p>
       </div>
 
       <div style="text-align:center;" data-reveal>
@@ -948,8 +957,8 @@
             <li data-i18n="plan1.li4">Revenue-at-risk board</li>
             <li data-i18n="plan1.li5">Email support</li>
           </ul>
-          <a class="btn btn-ghost btn-block" data-i18n="nav.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20Starter%20%E2%80%94%20early%20access" data-cta="pricing_starter_apply">Apply for early access</a>
-          <div class="tag-line" style="text-align:center;margin-top:14px;" data-i18n="plan.founding">Founding rate — locked for life</div>
+          <button type="button" class="btn btn-ghost btn-block" data-i18n="nav.cta" onclick="document.getElementById('heroTrialBtn').click()" data-cta="pricing_starter_start_trial">Start free trial</button>
+          <div class="tag-line" style="text-align:center;margin-top:14px;" data-i18n="plan.founding">Founding rate — locked for 12 months</div>
         </div>
 
         <div class="plan rec">
@@ -964,8 +973,8 @@
             <li data-i18n="plan2.li4">3 team seats included</li>
             <li data-i18n="plan2.li5">Priority support</li>
           </ul>
-          <a class="btn btn-primary btn-block" data-i18n="nav.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20Growth%20%E2%80%94%20early%20access" data-cta="pricing_growth_apply">Apply for early access</a>
-          <div class="tag-line" style="text-align:center;margin-top:14px;" data-i18n="plan.founding">Founding rate — locked for life</div>
+          <button type="button" class="btn btn-primary btn-block" data-i18n="nav.cta" onclick="document.getElementById('heroTrialBtn').click()" data-cta="pricing_growth_start_trial">Start free trial</button>
+          <div class="tag-line" style="text-align:center;margin-top:14px;" data-i18n="plan.founding">Founding rate — locked for 12 months</div>
         </div>
 
         <div class="plan">
@@ -979,8 +988,8 @@
             <li data-i18n="plan3.li4">10 team seats included, $499 tier at 20+</li>
             <li data-i18n="plan3.li5">White-glove setup call + dedicated Slack channel</li>
           </ul>
-          <a class="btn btn-ghost btn-block" data-i18n="plan3.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20Firm%20%E2%80%94%20early%20access" data-cta="pricing_firm_talk">Talk to us</a>
-          <div class="tag-line" style="text-align:center;margin-top:14px;" data-i18n="plan.founding">Founding rate — locked for life</div>
+          <button type="button" class="btn btn-ghost btn-block" data-i18n="plan3.cta" data-open-contact data-cta="pricing_firm_talk">Talk to us</button>
+          <div class="tag-line" style="text-align:center;margin-top:14px;" data-i18n="plan.founding">Founding rate — locked for 12 months</div>
         </div>
       </div>
       <p class="pricing-note" data-i18n="pricing.note">No credit card required to apply · Cancel anytime once live</p>
@@ -1029,7 +1038,7 @@
         </details>
         <details class="faq-item">
           <summary><span data-i18n="faq5.q">What does “design partner” pricing actually mean?</span></summary>
-          <p data-i18n="faq5.a">We're pre-launch and working closely with a small group of firms to build the product. Design partners get the rate on this page locked in for life, direct input on the roadmap, and white-glove setup — in exchange for feedback and a short case study once we see results.</p>
+          <p data-i18n="faq5.a">We're pre-launch and working closely with a small group of firms to build the product. Design partners get the rate on this page locked for 12 months, direct input on the roadmap, and white-glove setup — in exchange for feedback and a short case study once we see results.</p>
         </details>
       </div>
     </div>
@@ -1038,12 +1047,12 @@
   <!-- FINAL CTA -->
   <section class="final-cta">
     <div class="wrap" data-reveal>
-      <span class="eyebrow" style="justify-content:center;width:100%;" data-i18n="fc.eyebrow">Now onboarding founding teams</span>
+      <span class="eyebrow" style="justify-content:center;width:100%;" data-i18n="fc.eyebrow">Now onboarding a limited group of founding firms</span>
       <h2 style="margin-top:14px;" data-i18n="fc.h2">Stop letting revenue go quiet.</h2>
       <p data-i18n="fc.p">Tell us how many open proposals and invoices you're juggling right now — we'll show you what Innovex would do with them.</p>
       <div class="hero-ctas">
         <button type="button" class="btn btn-primary btn-lg" onclick="document.getElementById('heroTrialBtn').click()" data-i18n="hero.ctaTrial" data-cta="final_start_trial">Start your 7-day free trial — no credit card required</button>
-        <a class="btn btn-ghost" data-i18n="nav.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20%E2%80%94%20early%20access&body=Firm%20name%3A%0AWhat%20we%20do%3A%0AHow%20many%20open%20proposals%2Finvoices%20are%20we%20juggling%20right%20now%3A" data-cta="final_apply_early_access">Apply for early access</a>
+        <button type="button" class="btn btn-ghost" data-i18n="plan3.cta" data-open-contact data-cta="final_talk_to_us">Talk to us</button>
       </div>
     </div>
   </section>
@@ -1073,8 +1082,9 @@
         <div class="foot-col">
           <h5 data-i18n="foot.company">Company</h5>
           <a href="#faq" data-i18n="nav.faq">FAQ</a>
-          <a href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20%E2%80%94%20design%20partner" data-i18n="foot.applypartner">Apply as design partner</a>
-          <a href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20%E2%80%94%20question" data-i18n="foot.contact">Contact</a>
+          <a href="#" data-open-contact data-i18n="plan3.cta" data-cta="footer_talk_to_us">Talk to us</a>
+          <a href="privacy.html" data-i18n="foot.privacy">Privacy Policy</a>
+          <a href="terms.html" data-i18n="foot.terms">Terms of Service</a>
         </div>
       </div>
     </div>
@@ -1084,6 +1094,10 @@
     </div>
   </div>
 </footer>
+
+<div class="sticky-mobile-cta">
+  <button type="button" class="btn btn-primary" onclick="document.getElementById('heroTrialBtn').click()" data-i18n="hero.ctaTrialShort" data-cta="sticky_mobile_start_trial">Start free trial — no card required</button>
+</div>
 
 <div class="modal-overlay" id="signupOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-box">
@@ -1135,6 +1149,50 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="contactOverlay" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="contactModalClose" aria-label="Close">×</button>
+
+    <div class="modal-view active" id="contactViewForm">
+      <h2 id="contactModalTitle">Talk to us</h2>
+      <p class="modal-sub" id="contactModalSub">Tell us a bit about your firm and we'll reply within 1 business day.</p>
+
+      <form id="contactForm">
+        <div class="field">
+          <label for="cFldName">Full name</label>
+          <input type="text" id="cFldName" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="cFldEmail">Work email</label>
+          <input type="email" id="cFldEmail" autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="cFldFirm">Firm name</label>
+          <input type="text" id="cFldFirm" autocomplete="organization" />
+        </div>
+        <div class="field">
+          <label for="cFldVolume">Approx. open proposals/invoices right now</label>
+          <input type="text" id="cFldVolume" placeholder="e.g. 8" inputmode="numeric" />
+        </div>
+        <div class="field">
+          <label for="cFldWebsite">Website <span style="font-weight:400;color:var(--ink-faint);">(optional)</span></label>
+          <input type="text" id="cFldWebsite" autocomplete="url" placeholder="yourfirm.com" />
+        </div>
+        <div class="field-error" id="contactError">Enter your name, work email, and firm name to continue.</div>
+        <button type="submit" class="btn btn-primary btn-block" id="contactSubmit">Talk to us</button>
+      </form>
+      <p class="modal-trust">No spam. We only use this to reply about Innovex.</p>
+    </div>
+
+    <div class="modal-view success" id="contactViewSuccess">
+      <div class="success-icon">✓</div>
+      <h2>Thanks, <span id="contactSuccessName">there</span>.</h2>
+      <p>We've got your details — we'll reply within 1 business day.</p>
+      <button type="button" class="btn btn-primary btn-block" id="contactSuccessClose">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // Analytics hook: fires on every [data-cta] click. No-ops until a real analytics
   // provider is installed -- wires into whichever of these is added later.
@@ -1161,17 +1219,18 @@
       "topstrip.text": "Now onboarding a limited number of design partners for Q4 2026.",
       "topstrip.link": "See partner pricing →",
       "nav.product": "Product", "nav.how": "How it works", "nav.why": "Why Innovex", "nav.pricing": "Pricing", "nav.faq": "FAQ",
-      "nav.cta": "Apply for early access", "nav.ctaShort": "Apply",
+      "nav.cta": "Start free trial", "nav.ctaShort": "Trial",
       "hero.eyebrow": "Revenue Recovery Autopilot for Service Firms",
       "hero.h1": "Recover the revenue already sitting in your inbox.",
       "hero.h1a": "The deal isn't dead.", "hero.h1b": "It just went quiet.",
       "hero.lede": "Innovex tracks open proposals, stalled clients, and unpaid invoices — then runs follow-up until you get a reply or get paid.",
       "hero.cta2": "See how it works",
       "hero.ctaTrial": "Start your 7-day free trial — no credit card required",
-      "hero.trust": "Built for boutique agencies, consultants, and professional service firms. Now onboarding founding teams.",
+      "hero.ctaTrialShort": "Start free trial — no card required",
+      "hero.trust": "Built for boutique agencies, consultants, and professional service firms. Now onboarding a limited group of founding firms.",
       "hero.trust1": "No card required to start",
       "hero.trust2": "Approve every message before it sends",
-      "hero.trust3": "Founding rate locked for life",
+      "hero.trust3": "Founding rate locked for 12 months",
       "hero.stat1": "Tracked per firm in pilot cohort", "hero.statval2": "11 days",
       "hero.stat2": "Faster to signed or paid, targeted",
       "hero.stat3": "More replies after auto follow-up",
@@ -1261,7 +1320,7 @@
       "roi.ctaText": "See what's already sitting in your own inbox before you decide.",
       "pricing.eyebrow": "Pricing",
       "pricing.h2": "Priced for firms doing real revenue — not race-to-the-bottom freelancer tools.",
-      "pricing.p": "We're onboarding a limited number of design partners at these rates, locked in for life.",
+      "pricing.p": "We're onboarding a limited number of design partners at these rates, locked for 12 months.",
       "toggle.monthly": "Monthly", "toggle.annual": "Annual",
       "plan1.desc": "For solo consultants and small teams testing the system.",
       "plan.unit1": "/ month per firm",
@@ -1277,7 +1336,7 @@
       "plan3.li1": "Unlimited active proposals + invoices", "plan3.li2": "Team assignments & ownership",
       "plan3.li3": "Client-level revenue reporting", "plan3.li4": "10 team seats included, $499 tier at 20+",
       "plan3.li5": "White-glove setup call + dedicated Slack channel", "plan3.cta": "Talk to us",
-      "plan.founding": "Founding rate — locked for life",
+      "plan.founding": "Founding rate — locked for 12 months",
       "pricing.note": "No credit card required to apply · Cancel anytime once live",
       "pricing.ctaText": "Still deciding which plan? Start the trial — you can apply to any tier once you've seen it running on your own inbox.",
       "faq.h2": "Questions firms actually ask us",
@@ -1290,19 +1349,20 @@
       "faq4.q": "We're smaller than $1M, or bigger than $20M — still worth talking?",
       "faq4.a": "We're building specifically for firms in that range — small enough that one stalled invoice matters, big enough that you can't chase every one by hand. Reach out anyway; we're still shaping who this fits.",
       "faq5.q": "What does “design partner” pricing actually mean?",
-      "faq5.a": "We're pre-launch and working closely with a small group of firms to build the product. Design partners get the rate on this page locked in for life, direct input on the roadmap, and white-glove setup — in exchange for feedback and a short case study once we see results.",
+      "faq5.a": "We're pre-launch and working closely with a small group of firms to build the product. Design partners get the rate on this page locked for 12 months, direct input on the roadmap, and white-glove setup — in exchange for feedback and a short case study once we see results.",
       "faq6.q": "Can I approve every message before it sends?",
       "faq6.a": "Yes — that's the default. Every drafted follow-up lands in an approval queue first. You read it, edit it if you want, and click approve before anything reaches your client. You can turn on set-and-forget sending later, per sequence, once you trust the drafts.",
       "faq7.q": "How long does setup actually take?",
       "faq7.a": "Most firms are connected and seeing their first board of open proposals and invoices within an hour. There's no data migration and nothing to import — Innovex reads what's already in your inbox.",
       "faq8.q": "What happens after a client replies or pays?",
       "faq8.a": "The sequence for that thread stops immediately — nobody gets a follow-up after they've already responded. A signed proposal or paid invoice moves to \"Signed / Paid\" on your board and counts toward your recovered-revenue reporting.",
-      "fc.eyebrow": "Now onboarding founding teams",
+      "fc.eyebrow": "Now onboarding a limited group of founding firms",
       "fc.h2": "Stop letting revenue go quiet.",
       "fc.p": "Tell us how many open proposals and invoices you're juggling right now — we'll show you what Innovex would do with them.",
       "foot.tagline": "The follow-up autopilot for agencies and consulting firms. We stop proposals and invoices from going dark.",
       "foot.howitworks": "How it works", "foot.company": "Company",
       "foot.applypartner": "Apply as design partner", "foot.contact": "Contact",
+      "foot.privacy": "Privacy Policy", "foot.terms": "Terms of Service",
       "foot.copyright": "© 2026 Innovex. All rights reserved.",
       "foot.prelaunch": "Pre-launch — figures on this page are illustrative product previews."
     },
@@ -1805,6 +1865,8 @@
 
   var heroTrialBtn = document.getElementById('heroTrialBtn');
   if (heroTrialBtn) heroTrialBtn.addEventListener('click', function () { openModal('signup'); });
+  var navTrialBtn = document.getElementById('navTrialBtn');
+  if (navTrialBtn) navTrialBtn.addEventListener('click', function () { openModal('signup'); });
   document.getElementById('modalClose').addEventListener('click', closeModal);
   overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
@@ -1901,9 +1963,9 @@
   async function showTrialSuccess(name, email) {
     var untilLabel = '';
     try {
-      var profileRes = await sb.from('profiles').select('trial_ends_at').single();
-      if (profileRes.data && profileRes.data.trial_ends_at) {
-        untilLabel = new Date(profileRes.data.trial_ends_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+      var wsRes = await sb.from('workspaces').select('trial_ends_at').maybeSingle();
+      if (wsRes.data && wsRes.data.trial_ends_at) {
+        untilLabel = new Date(wsRes.data.trial_ends_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
       }
     } catch (err) {}
     if (!untilLabel) {
@@ -1917,6 +1979,80 @@
     viewAuth.classList.remove('active');
     viewSuccess.classList.add('active');
   }
+
+  /* ---------- contact / lead-capture modal (real form, no mailto) ---------- */
+  var contactOverlay = document.getElementById('contactOverlay');
+  var contactViewForm = document.getElementById('contactViewForm');
+  var contactViewSuccess = document.getElementById('contactViewSuccess');
+
+  function openContactModal() {
+    contactOverlay.classList.add('open');
+    contactViewForm.classList.add('active');
+    contactViewSuccess.classList.remove('active');
+    document.getElementById('contactError').classList.remove('show');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeContactModal() {
+    contactOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('contactModalClose').addEventListener('click', closeContactModal);
+  contactOverlay.addEventListener('click', function (e) { if (e.target === contactOverlay) closeContactModal(); });
+  document.getElementById('contactSuccessClose').addEventListener('click', closeContactModal);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && contactOverlay.classList.contains('open')) closeContactModal(); });
+  document.querySelectorAll('[data-open-contact]').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      openContactModal();
+    });
+  });
+
+  document.getElementById('contactForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var name = document.getElementById('cFldName').value.trim();
+    var email = document.getElementById('cFldEmail').value.trim();
+    var firm = document.getElementById('cFldFirm').value.trim();
+    var volume = document.getElementById('cFldVolume').value.trim();
+    var website = document.getElementById('cFldWebsite').value.trim();
+    var errorEl = document.getElementById('contactError');
+    var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!name || !emailOk || !firm) {
+      errorEl.textContent = 'Enter your name, work email, and firm name to continue.';
+      errorEl.classList.add('show');
+      return;
+    }
+    errorEl.classList.remove('show');
+    var submitBtn = document.getElementById('contactSubmit');
+    submitBtn.disabled = true;
+    try {
+      var res = await sb.from('lead_submissions').insert({
+        full_name: name,
+        work_email: email,
+        firm_name: firm,
+        open_items_estimate: volume || null,
+        website: website || null,
+        source: window.location.pathname
+      });
+      if (res.error) {
+        errorEl.textContent = 'Something went wrong — try again, or reach us another way.';
+        errorEl.classList.add('show');
+        submitBtn.disabled = false;
+        return;
+      }
+      try {
+        if (window.plausible) window.plausible('contact_form_submit');
+        else if (window.gtag) window.gtag('event', 'contact_form_submit', { event_category: 'form' });
+        else if (window.dataLayer) window.dataLayer.push({ event: 'contact_form_submit' });
+      } catch (err) {}
+      document.getElementById('contactSuccessName').textContent = name.split(' ')[0] || name;
+      contactViewForm.classList.remove('active');
+      contactViewSuccess.classList.add('active');
+    } catch (err) {
+      errorEl.textContent = 'Something went wrong — try again, or reach us another way.';
+      errorEl.classList.add('show');
+      submitBtn.disabled = false;
+    }
+  });
 </script>
 </body>
 </html>

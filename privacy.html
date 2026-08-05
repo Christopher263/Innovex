@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Privacy Policy — Innovex</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="How Innovex collects, uses, and protects your data, including data accessed through Gmail." />
+<link rel="canonical" href="https://www.theinnovex.tech/privacy.html" />
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+<meta name="theme-color" content="#0A0D14" />
+<style>
+  :root {
+    --bg: #0A0D14; --surface: #11151F; --surface-sunk: #0D101A;
+    --border: #232A3D; --border-strong: #333B54;
+    --ink: #F4F6FB; --ink-soft: #ADB4C9; --ink-faint: #6C7590;
+    --accent: #4C82FF; --accent-strong: #7EA2FF;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #FFFFFF; --surface: #FFFFFF; --surface-sunk: #F5F7FC; --border: #E4E7F0; --border-strong: #CDD3E4; --ink: #10131C; --ink-soft: #4B5468; --ink-faint: #838DA6; --accent: #2A5FE0; --accent-strong: #1E4BC2; }
+  }
+  :root[data-theme="dark"] { --bg: #0A0D14; --surface: #11151F; --surface-sunk: #0D101A; --border: #232A3D; --border-strong: #333B54; --ink: #F4F6FB; --ink-soft: #ADB4C9; --ink-faint: #6C7590; --accent: #4C82FF; --accent-strong: #7EA2FF; }
+  :root[data-theme="light"] { --bg: #FFFFFF; --surface: #FFFFFF; --surface-sunk: #F5F7FC; --border: #E4E7F0; --border-strong: #CDD3E4; --ink: #10131C; --ink-soft: #4B5468; --ink-faint: #838DA6; --accent: #2A5FE0; --accent-strong: #1E4BC2; }
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; line-height: 1.65; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
+  header { padding: 22px 0; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+  .logo { display: flex; align-items: center; gap: 9px; font-size: 19px; font-weight: 700; text-decoration: none; color: var(--ink); }
+  h1 { font-size: 30px; margin: 0 0 6px; }
+  h2 { font-size: 19px; margin: 40px 0 10px; }
+  p, li { color: var(--ink-soft); font-size: 15px; }
+  .updated { color: var(--ink-faint); font-size: 13px; margin: 0 0 30px; }
+  a { color: var(--accent-strong); }
+  a.back { display: inline-block; margin-top: 40px; text-decoration: none; color: var(--ink-soft); border: 1px solid var(--border-strong); padding: 9px 16px; border-radius: 7px; }
+  ul { padding-left: 20px; }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('innovex_theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="logo" href="index.html">
+      <svg viewBox="0 0 64 64" width="24" height="24" aria-hidden="true"><rect x="3" y="3" width="58" height="58" rx="17" fill="#4C82FF"/><polyline points="19,34 28,43 46,19" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="46" cy="19" r="4.4" fill="#FFFFFF"/></svg>
+      Innovex
+    </a>
+  </div>
+</header>
+<div class="wrap">
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated August 2026 · Innovex is a pre-launch, early-access product — this policy will be expanded as we grow.</p>
+
+  <p>This policy explains what information Innovex collects, why, and how we handle it — including information accessed through Gmail, since connecting Gmail is core to how Innovex works.</p>
+
+  <h2>What we collect</h2>
+  <ul>
+    <li><strong>Account information:</strong> your name, work email, and password (stored securely by our authentication provider, Supabase — we never see or store your password in plain text).</li>
+    <li><strong>Gmail data, only if you connect it:</strong> OAuth tokens (encrypted at rest and never exposed in plain text), and the subject, snippet, and sender/recipient of messages relevant to proposals, invoices, and client follow-up threads you've asked Innovex to track.</li>
+    <li><strong>Workspace and team data:</strong> who's on your team, their role, and the follow-up cadence/settings you configure.</li>
+    <li><strong>Product usage data:</strong> the proposals/invoices you track, drafts generated, and whether you approve, reject, or send them.</li>
+    <li><strong>Contact form submissions:</strong> if you fill out a "Talk to us" or early-access form, we collect your name, email, firm name, and anything else you choose to share.</li>
+  </ul>
+
+  <h2>How we use it</h2>
+  <ul>
+    <li>To operate the core product: detecting stalled proposals and invoices, drafting follow-up messages, and sending them only after you explicitly approve.</li>
+    <li>To maintain your account, trial, and workspace.</li>
+    <li>To respond to questions you send us.</li>
+    <li>To improve the product — we do not sell your data, and we do not use your Gmail content to train any AI model.</li>
+  </ul>
+
+  <h2>Google user data</h2>
+  <p>Innovex's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements. Gmail data is used solely to provide the follow-up tracking and drafting features you've connected Gmail for — never for advertising, and never shared with third parties except the infrastructure providers (see below) needed to run the product.</p>
+
+  <h2>Where data lives</h2>
+  <p>Innovex is built on Supabase (a hosted Postgres database and authentication provider) and deployed on Vercel. Gmail refresh tokens are stored using Supabase Vault, a dedicated encrypted-secret store — application code and staff never handle them in plain text. Draft follow-ups are only sent after a human on your team clicks approve.</p>
+
+  <h2>Your choices</h2>
+  <ul>
+    <li>Disconnect Gmail at any time from your dashboard's Settings tab — this revokes our access with Google immediately.</li>
+    <li>Request deletion of your account and associated data by reaching out through the "Talk to us" form on our homepage.</li>
+    <li>Approve or reject every drafted follow-up before it sends — nothing goes out automatically without that step unless you explicitly turn it off for a given sequence.</li>
+  </ul>
+
+  <h2>Cookies &amp; analytics</h2>
+  <p>We use minimal local storage to remember your theme (light/dark) and language preference. We may use lightweight, privacy-respecting analytics to understand which pages and buttons are used — this is limited to aggregate click/page events, not personal profiling.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>As Innovex moves from early access to general availability, this policy will be updated to reflect new features (like billing) and we'll note the date above accordingly.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy or your data? Use the "Talk to us" link on our <a href="index.html">homepage</a>.</p>
+
+  <a class="back" href="index.html">← Back to Innovex</a>
+</div>
+</body>
+</html>
