@@ -6,52 +6,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root {
-    --bg: #FFFFFF; --surface: #FFFFFF; --surface-sunk: #F6F5FB;
-    --border: #E7E4F3; --border-strong: #D3CDEC;
-    --ink: #18151F; --ink-soft: #59556D; --ink-faint: #8F8AA3;
-    --accent: #6E56CF; --accent-strong: #5A3FC0; --accent-soft: #EEEAFC; --accent-vivid: #6E56CF;
-    --good: #2F9E5B; --good-soft: #DEF2E6;
-    --warning: #C97A2B; --warning-soft: #F5E4CE;
-    --critical: #C6362E; --critical-soft: #F8DFDC;
-    --cold: #57707C; --cold-soft: #E3E9EA;
-    --shadow: 0 1px 2px rgba(24,21,31,0.05), 0 16px 36px -18px rgba(24,21,31,0.20);
+    /* same identity as the marketing site: dark-premium, electric blue + violet,
+       lime reserved only for recovered-revenue moments */
+    --bg: #0A0D14; --surface: #11151F; --surface-sunk: #0D101A;
+    --border: #232A3D; --border-strong: #333B54;
+    --ink: #F4F6FB; --ink-soft: #ADB4C9; --ink-faint: #6C7590;
+    --accent: #4C82FF; --accent-strong: #7EA2FF; --accent-soft: #16223F; --accent-vivid: #4C82FF;
+    --violet: #9D7BFF; --violet-strong: #B69CFF; --violet-soft: #221A3F;
+    --recovered: #C6F24D; --recovered-soft: #232B12;
+    --good: #4FBE81; --good-soft: #14261C;
+    --warning: #E0A648; --warning-soft: #2E2413;
+    --critical: #E8695F; --critical-soft: #331B1A;
+    --cold: #7C93B0; --cold-soft: #1B222D;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 24px 48px -20px rgba(0,0,0,0.65);
     --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Roboto Mono', monospace;
     --sidebar-w: 226px;
   }
-  @media (prefers-color-scheme: dark) {
+  @media (prefers-color-scheme: light) {
     :root {
-      --bg: #131019; --surface: #1C1826; --surface-sunk: #17131F;
-      --border: #322C46; --border-strong: #423A5C;
-      --ink: #F1EFFA; --ink-soft: #B7B2CB; --ink-faint: #7B7690;
-      --accent: #A491FA; --accent-strong: #C1B3FD; --accent-soft: #2C2545;
-      --good: #59C583; --good-soft: #1B3327;
-      --warning: #E09A54; --warning-soft: #3A2A17;
-      --critical: #E67D74; --critical-soft: #3B211E;
-      --cold: #8FACB7; --cold-soft: #212B2C;
-      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 20px 44px -20px rgba(0,0,0,0.55);
+      --bg: #FFFFFF; --surface: #FFFFFF; --surface-sunk: #F5F7FC;
+      --border: #E4E7F0; --border-strong: #CDD3E4;
+      --ink: #10131C; --ink-soft: #4B5468; --ink-faint: #838DA6;
+      --accent: #2A5FE0; --accent-strong: #1E4BC2; --accent-soft: #E8EFFF; --accent-vivid: #2A5FE0;
+      --violet: #7C4FE0; --violet-strong: #6538C4; --violet-soft: #F1EAFF;
+      --recovered: #6B8F1A; --recovered-soft: #EEF6D6;
+      --good: #2F9E5B; --good-soft: #DEF2E6;
+      --warning: #C97A2B; --warning-soft: #F5E4CE;
+      --critical: #C6362E; --critical-soft: #F8DFDC;
+      --cold: #57707C; --cold-soft: #E3E9EA;
+      --shadow: 0 1px 2px rgba(16,19,28,0.05), 0 16px 36px -18px rgba(16,19,28,0.18);
     }
   }
   :root[data-theme="dark"] {
-    --bg: #131019; --surface: #1C1826; --surface-sunk: #17131F;
-    --border: #322C46; --border-strong: #423A5C;
-    --ink: #F1EFFA; --ink-soft: #B7B2CB; --ink-faint: #7B7690;
-    --accent: #A491FA; --accent-strong: #C1B3FD; --accent-soft: #2C2545;
-    --good: #59C583; --good-soft: #1B3327;
-    --warning: #E09A54; --warning-soft: #3A2A17;
-    --critical: #E67D74; --critical-soft: #3B211E;
-    --cold: #8FACB7; --cold-soft: #212B2C;
-    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 20px 44px -20px rgba(0,0,0,0.55);
+    --bg: #0A0D14; --surface: #11151F; --surface-sunk: #0D101A;
+    --border: #232A3D; --border-strong: #333B54;
+    --ink: #F4F6FB; --ink-soft: #ADB4C9; --ink-faint: #6C7590;
+    --accent: #4C82FF; --accent-strong: #7EA2FF; --accent-soft: #16223F; --accent-vivid: #4C82FF;
+    --violet: #9D7BFF; --violet-strong: #B69CFF; --violet-soft: #221A3F;
+    --recovered: #C6F24D; --recovered-soft: #232B12;
+    --good: #4FBE81; --good-soft: #14261C;
+    --warning: #E0A648; --warning-soft: #2E2413;
+    --critical: #E8695F; --critical-soft: #331B1A;
+    --cold: #7C93B0; --cold-soft: #1B222D;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 24px 48px -20px rgba(0,0,0,0.65);
   }
   :root[data-theme="light"] {
-    --bg: #FFFFFF; --surface: #FFFFFF; --surface-sunk: #F6F5FB;
-    --border: #E7E4F3; --border-strong: #D3CDEC;
-    --ink: #18151F; --ink-soft: #59556D; --ink-faint: #8F8AA3;
-    --accent: #6E56CF; --accent-strong: #5A3FC0; --accent-soft: #EEEAFC;
+    --bg: #FFFFFF; --surface: #FFFFFF; --surface-sunk: #F5F7FC;
+    --border: #E4E7F0; --border-strong: #CDD3E4;
+    --ink: #10131C; --ink-soft: #4B5468; --ink-faint: #838DA6;
+    --accent: #2A5FE0; --accent-strong: #1E4BC2; --accent-soft: #E8EFFF; --accent-vivid: #2A5FE0;
+    --violet: #7C4FE0; --violet-strong: #6538C4; --violet-soft: #F1EAFF;
+    --recovered: #6B8F1A; --recovered-soft: #EEF6D6;
     --good: #2F9E5B; --good-soft: #DEF2E6;
     --warning: #C97A2B; --warning-soft: #F5E4CE;
     --critical: #C6362E; --critical-soft: #F8DFDC;
     --cold: #57707C; --cold-soft: #E3E9EA;
-    --shadow: 0 1px 2px rgba(24,21,31,0.05), 0 16px 36px -18px rgba(24,21,31,0.20);
+    --shadow: 0 1px 2px rgba(16,19,28,0.05), 0 16px 36px -18px rgba(16,19,28,0.18);
   }
 
   * { box-sizing: border-box; }
@@ -139,6 +150,7 @@
   .chip.warning { background: var(--warning-soft); color: var(--warning); } .chip.warning::before { background: var(--warning); }
   .chip.critical { background: var(--critical-soft); color: var(--critical); } .chip.critical::before { background: var(--critical); }
   .chip.cold { background: var(--cold-soft); color: var(--cold); } .chip.cold::before { background: var(--cold); }
+  .chip.recovered { background: var(--recovered-soft); color: var(--recovered); } .chip.recovered::before { background: var(--recovered); }
 
   /* ---------- kanban ---------- */
   .kanban { display: grid; grid-template-columns: repeat(4, minmax(230px, 1fr)); gap: 14px; align-items: start; }
@@ -267,7 +279,7 @@
 </script>
 <meta name="description" content="Innovex dashboard — track outstanding proposals and invoices, automate follow-up sequences, and see recovered revenue." />
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-<meta name="theme-color" content="#6E56CF" />
+<meta name="theme-color" content="#0A0D14" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
   var sb = supabase.createClient(
@@ -337,7 +349,7 @@
       <div class="content">
         <div class="stat-row">
           <div class="stat-card"><div class="label">Revenue at risk</div><b class="tnum" id="statAtRisk">$0</b><div class="delta warn">Across <span id="statAtRiskCount">0</span> open items</div></div>
-          <div class="stat-card"><div class="label">Recovered this month</div><b class="tnum" id="statRecovered">$0</b><div class="delta" id="statRecoveredNote">Since your trial started</div></div>
+          <div class="stat-card"><div class="label">Recovered this month</div><b class="tnum" id="statRecovered" style="color:var(--recovered);">$0</b><div class="delta" id="statRecoveredNote">Since your trial started</div></div>
           <div class="stat-card"><div class="label">Reply rate</div><b class="tnum" id="statReplyRate">—</b><div class="delta" id="statReplyRateNote">Across all tracked threads</div></div>
           <div class="stat-card"><div class="label">Avg. days to close</div><b class="tnum" id="statAvgDays">—</b><div class="delta" id="statAvgDaysNote">From sent to signed/paid</div></div>
         </div>
@@ -528,7 +540,7 @@
     if (stage === 0) return '<span class="chip cold">Sent</span>';
     if (stage === 1) return days >= 5 ? '<span class="chip warning">Follow-up sent</span>' : '<span class="chip warning">Due soon</span>';
     if (stage === 2) return '<span class="chip good">Replied</span>';
-    return '<span class="chip good">Signed / Paid</span>';
+    return '<span class="chip recovered">Signed / Paid</span>';
   }
 
   function rowToItem(row) {
@@ -735,7 +747,7 @@
       if (bucket) bucket.total += Number(r.amount);
     });
     var max = Math.max.apply(null, months.map(function (m) { return m.total; }).concat([1]));
-    var ramp = ['#E4DFFB', '#CFC3F5', '#CFC3F5', '#B29EEE', '#B29EEE', 'var(--accent)'];
+    var ramp = ['var(--accent-soft)', 'color-mix(in srgb, var(--accent) 35%, var(--accent-soft))', 'color-mix(in srgb, var(--accent) 35%, var(--accent-soft))', 'color-mix(in srgb, var(--accent) 65%, var(--accent-soft))', 'var(--violet-soft)', 'var(--recovered)'];
     var el = document.getElementById('reportBars');
     el.innerHTML = months.map(function (m, idx) {
       var pct = Math.round((m.total / max) * 100);
