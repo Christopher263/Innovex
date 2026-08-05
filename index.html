@@ -6,71 +6,91 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root {
-    --bg: #FFFFFF;
-    --surface: #FFFFFF;
-    --surface-sunk: #F6F5FB;
-    --border: #E7E4F3;
-    --border-strong: #D3CDEC;
-    --ink: #18151F;
-    --ink-soft: #59556D;
-    --ink-faint: #8F8AA3;
-    --accent: #6E56CF;
-    --accent-strong: #5A3FC0;
-    --accent-soft: #EEEAFC;
-    --good: #2F9E5B;
-    --good-soft: #DEF2E6;
-    --warning: #C97A2B;
-    --warning-soft: #F5E4CE;
-    --critical: #C6362E;
-    --critical-soft: #F8DFDC;
-    --cold: #57707C;
-    --cold-soft: #E3E9EA;
-    --shadow: 0 1px 2px rgba(24,21,31,0.05), 0 16px 36px -18px rgba(24,21,31,0.20);
+    /* dark is the primary, deliberate identity for this page — premium saturated tech */
+    --bg: #0A0D14;
+    --surface: #11151F;
+    --surface-sunk: #0D101A;
+    --border: #232A3D;
+    --border-strong: #333B54;
+    --ink: #F4F6FB;
+    --ink-soft: #ADB4C9;
+    --ink-faint: #6C7590;
+    --accent: #4C82FF;
+    --accent-strong: #7EA2FF;
+    --accent-soft: #16223F;
+    --violet: #9D7BFF;
+    --violet-strong: #B69CFF;
+    --violet-soft: #221A3F;
+    --recovered: #C6F24D;
+    --recovered-soft: #232B12;
+    --recovered-ink: #1C2408;
+    --good: #4FBE81;
+    --good-soft: #14261C;
+    --warning: #E0A648;
+    --warning-soft: #2E2413;
+    --critical: #E8695F;
+    --critical-soft: #331B1A;
+    --cold: #7C93B0;
+    --cold-soft: #1B222D;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 24px 48px -20px rgba(0,0,0,0.65);
     --font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Roboto Mono', monospace;
   }
-  @media (prefers-color-scheme: dark) {
+  @media (prefers-color-scheme: light) {
     :root {
-      --bg: #131019;
-      --surface: #1C1826;
-      --surface-sunk: #17131F;
-      --border: #322C46;
-      --border-strong: #423A5C;
-      --ink: #F1EFFA;
-      --ink-soft: #B7B2CB;
-      --ink-faint: #7B7690;
-      --accent: #A491FA;
-      --accent-strong: #C1B3FD;
-      --accent-soft: #2C2545;
-      --good: #59C583;
-      --good-soft: #1B3327;
-      --warning: #E09A54;
-      --warning-soft: #3A2A17;
-      --critical: #E67D74;
-      --critical-soft: #3B211E;
-      --cold: #8FACB7;
-      --cold-soft: #212B2C;
-      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 20px 44px -20px rgba(0,0,0,0.55);
+      --bg: #FFFFFF;
+      --surface: #FFFFFF;
+      --surface-sunk: #F5F7FC;
+      --border: #E4E7F0;
+      --border-strong: #CDD3E4;
+      --ink: #10131C;
+      --ink-soft: #4B5468;
+      --ink-faint: #838DA6;
+      --accent: #2A5FE0;
+      --accent-strong: #1E4BC2;
+      --accent-soft: #E8EFFF;
+      --violet: #7C4FE0;
+      --violet-strong: #6538C4;
+      --violet-soft: #F1EAFF;
+      --recovered: #6B8F1A;
+      --recovered-soft: #EEF6D6;
+      --recovered-ink: #1C2408;
+      --good: #2F9E5B;
+      --good-soft: #DEF2E6;
+      --warning: #C97A2B;
+      --warning-soft: #F5E4CE;
+      --critical: #C6362E;
+      --critical-soft: #F8DFDC;
+      --cold: #57707C;
+      --cold-soft: #E3E9EA;
+      --shadow: 0 1px 2px rgba(16,19,28,0.05), 0 16px 36px -18px rgba(16,19,28,0.18);
     }
   }
   :root[data-theme="dark"] {
-    --bg: #131019; --surface: #1C1826; --surface-sunk: #17131F; --border: #322C46; --border-strong: #423A5C;
-    --ink: #F1EFFA; --ink-soft: #B7B2CB; --ink-faint: #7B7690;
-    --accent: #A491FA; --accent-strong: #C1B3FD; --accent-soft: #2C2545;
-    --good: #59C583; --good-soft: #1B3327; --warning: #E09A54; --warning-soft: #3A2A17;
-    --critical: #E67D74; --critical-soft: #3B211E; --cold: #8FACB7; --cold-soft: #212B2C;
-    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 20px 44px -20px rgba(0,0,0,0.55);
+    --bg: #0A0D14; --surface: #11151F; --surface-sunk: #0D101A; --border: #232A3D; --border-strong: #333B54;
+    --ink: #F4F6FB; --ink-soft: #ADB4C9; --ink-faint: #6C7590;
+    --accent: #4C82FF; --accent-strong: #7EA2FF; --accent-soft: #16223F;
+    --violet: #9D7BFF; --violet-strong: #B69CFF; --violet-soft: #221A3F;
+    --recovered: #C6F24D; --recovered-soft: #232B12; --recovered-ink: #1C2408;
+    --good: #4FBE81; --good-soft: #14261C; --warning: #E0A648; --warning-soft: #2E2413;
+    --critical: #E8695F; --critical-soft: #331B1A; --cold: #7C93B0; --cold-soft: #1B222D;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 24px 48px -20px rgba(0,0,0,0.65);
   }
   :root[data-theme="light"] {
-    --bg: #FFFFFF; --surface: #FFFFFF; --surface-sunk: #F6F5FB; --border: #E7E4F3; --border-strong: #D3CDEC;
-    --ink: #18151F; --ink-soft: #59556D; --ink-faint: #8F8AA3;
-    --accent: #6E56CF; --accent-strong: #5A3FC0; --accent-soft: #EEEAFC;
+    --bg: #FFFFFF; --surface: #FFFFFF; --surface-sunk: #F5F7FC; --border: #E4E7F0; --border-strong: #CDD3E4;
+    --ink: #10131C; --ink-soft: #4B5468; --ink-faint: #838DA6;
+    --accent: #2A5FE0; --accent-strong: #1E4BC2; --accent-soft: #E8EFFF;
+    --violet: #7C4FE0; --violet-strong: #6538C4; --violet-soft: #F1EAFF;
+    --recovered: #6B8F1A; --recovered-soft: #EEF6D6; --recovered-ink: #1C2408;
     --good: #2F9E5B; --good-soft: #DEF2E6; --warning: #C97A2B; --warning-soft: #F5E4CE;
     --critical: #C6362E; --critical-soft: #F8DFDC; --cold: #57707C; --cold-soft: #E3E9EA;
-    --shadow: 0 1px 2px rgba(24,21,31,0.05), 0 16px 36px -18px rgba(24,21,31,0.20);
+    --shadow: 0 1px 2px rgba(16,19,28,0.05), 0 16px 36px -18px rgba(16,19,28,0.18);
   }
 
-  :root { --accent-vivid: #6E56CF; }
+  :root { --accent-vivid: #4C82FF; }
+  :root[data-theme="light"] { --accent-vivid: #2A5FE0; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --accent-vivid: #2A5FE0; } }
 
   * { box-sizing: border-box; }
   html { color-scheme: light dark; }
@@ -99,7 +119,6 @@
     gap: 8px;
   }
   .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); display: inline-block; }
-  .tnum { font-variant-numeric: tabular-nums; }
 
   /* ---------- top strip ---------- */
   .topstrip {
@@ -147,13 +166,16 @@
     transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
   }
   .btn:active { transform: translateY(1px); }
-  .btn-primary { background: var(--ink); color: var(--bg); }
-  .btn-primary:hover { background: var(--accent-strong); color: var(--bg); }
+  .btn-primary { background: var(--accent); color: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.2), 0 8px 20px -8px color-mix(in srgb, var(--accent) 55%, transparent); }
+  .btn-primary:hover { background: var(--accent-strong); }
+  .btn-secondary { background: var(--violet); color: #FFFFFF; }
+  .btn-secondary:hover { background: var(--violet-strong); }
   .btn-ghost { background: transparent; color: var(--ink); border-color: var(--border-strong); }
   .btn-ghost:hover { border-color: var(--ink-faint); }
   .btn-sm { padding: 8px 14px; font-size: 13.5px; }
   .btn-lg { padding: 14px 24px; font-size: 15.5px; }
   .btn-block { width: 100%; }
+  .tnum { font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
 
   section { padding: 96px 0; }
   @media (max-width: 700px) { section { padding: 64px 0; } }
@@ -169,10 +191,10 @@
   @media (max-width: 700px) { .hero h1 { font-size: 38px; } }
   .hero .lede { font-size: 18px; color: var(--ink-soft); max-width: 50ch; }
   .hero-ctas { display: flex; gap: 14px; margin-top: 30px; flex-wrap: wrap; }
-  .hero-stats { display: flex; gap: 34px; margin-top: 44px; flex-wrap: wrap; }
-  .hero-stats .stat b { display: block; font-family: var(--font-display); font-size: 26px; color: var(--ink); }
-  .hero-stats .stat span { font-size: 12.5px; color: var(--ink-faint); }
   .hero-note { margin-top: 14px; font-size: 12.5px; color: var(--ink-faint); }
+  .hero-trust { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--border); }
+  .hero-trustline { font-size: 15px; color: var(--ink); font-weight: 600; margin: 0; max-width: 46ch; }
+  .hero-trust-row { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; font-size: 12.5px; color: var(--ink-faint); }
 
   /* ---------- mock panel (shared) ---------- */
   .panel {
@@ -189,6 +211,7 @@
   .chip.warning { background: var(--warning-soft); color: var(--warning); } .chip.warning::before { background: var(--warning); }
   .chip.critical { background: var(--critical-soft); color: var(--critical); } .chip.critical::before { background: var(--critical); }
   .chip.cold { background: var(--cold-soft); color: var(--cold); } .chip.cold::before { background: var(--cold); }
+  .chip.recovered { background: var(--recovered-soft); color: var(--recovered); } .chip.recovered::before { background: var(--recovered); }
 
   .risk-row { display: grid; grid-template-columns: 1.3fr 0.8fr 0.9fr 1fr; gap: 10px; align-items: center; padding: 13px 20px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
   .risk-row:last-child { border-bottom: none; }
@@ -206,6 +229,9 @@
   .proof p { margin: 0; font-size: 13px; color: var(--ink-faint); letter-spacing: 0.02em; }
   .proof .tags { display: flex; gap: 10px; flex-wrap: wrap; }
   .proof .tag { font-size: 13px; padding: 7px 14px; border: 1px solid var(--border-strong); border-radius: 999px; color: var(--ink-soft); }
+  .founder-note { margin: 30px 0 0; padding: 22px 24px; border-left: 3px solid var(--accent); background: var(--surface-sunk); border-radius: 0 10px 10px 0; }
+  .founder-note p { margin: 0; font-size: 15px; color: var(--ink); font-style: normal; max-width: 62ch; }
+  .founder-note cite { display: block; margin-top: 10px; font-style: normal; font-size: 13px; color: var(--ink-faint); font-weight: 600; }
 
   /* ---------- features ---------- */
   .feature { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 64px; align-items: center; }
@@ -247,8 +273,48 @@
   .stat-tiles .tile span { font-size: 11.5px; color: var(--ink-faint); }
   @media (max-width: 560px) { .stat-tiles { grid-template-columns: 1fr; } .stat-tiles .tile { border-right: none; border-top: 1px solid var(--border); } .stat-tiles .tile:first-child { border-top: none; } }
 
+  /* ---------- reusable card grids + cta band ---------- */
+  .card-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  @media (max-width: 860px) { .card-grid-3 { grid-template-columns: 1fr; } }
+  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 30px 26px; }
+  .info-card .icon-badge { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+  .info-card .icon-badge svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .info-card.tone-accent .icon-badge { background: var(--accent-soft); color: var(--accent-strong); }
+  .info-card.tone-violet .icon-badge { background: var(--violet-soft); color: var(--violet-strong); }
+  .info-card.tone-critical .icon-badge { background: var(--critical-soft); color: var(--critical); }
+  .info-card h3 { font-size: 19px; margin-bottom: 10px; font-family: var(--font-display); }
+  .info-card p { font-size: 14.5px; color: var(--ink-soft); margin: 0; }
+  .info-card .tag-line { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); margin-top: 16px; }
+
+  .cta-band {
+    margin-top: 56px; padding: 30px 34px; border-radius: 16px;
+    background: var(--surface-sunk); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  }
+  .cta-band p { margin: 0; font-size: 16px; font-weight: 600; color: var(--ink); max-width: 42ch; }
+  @media (max-width: 640px) { .cta-band { flex-direction: column; align-items: flex-start; } }
+
+  /* ---------- integrations ---------- */
+  .integrations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .integration-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .integration-card .name { font-weight: 700; font-size: 14.5px; }
+  .status-pill { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+  .status-pill.live { background: var(--good-soft); color: var(--good); }
+  .status-pill.soon { background: var(--surface-sunk); color: var(--ink-faint); border: 1px solid var(--border-strong); }
+
+  /* ---------- roi ---------- */
+  .roi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  @media (max-width: 860px) { .roi-grid { grid-template-columns: 1fr; } }
+  .roi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 30px 26px; text-align: center; }
+  .roi-card b { display: block; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 34px; color: var(--recovered); }
+  .roi-card span { display: block; font-size: 14px; color: var(--ink-soft); margin-top: 8px; }
+  .roi-note { font-size: 12.5px; color: var(--ink-faint); text-align: center; margin-top: 28px; max-width: 60ch; margin-left: auto; margin-right: auto; }
+
   /* ---------- onboarding steps ---------- */
   .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+  .steps.steps-4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 1040px) { .steps.steps-4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .steps.steps-4 { grid-template-columns: 1fr; } }
   @media (max-width: 820px) { .steps { grid-template-columns: 1fr; } }
   .step .num { font-family: var(--font-display); font-size: 30px; color: var(--accent); }
   .step h4 { font-family: var(--font-body); font-size: 16.5px; font-weight: 700; margin: 10px 0 8px; }
@@ -407,9 +473,18 @@
     } catch (e) {}
   })();
 </script>
-<meta name="description" content="Innovex automates client, proposal, and invoice follow-up for boutique agencies and consulting firms, so nothing sits unpaid or unanswered." />
+<meta name="description" content="Innovex is the revenue recovery autopilot for boutique agencies, consultants, and professional service firms — it tracks open proposals and unpaid invoices, then follows up until you get a reply or get paid." />
+<link rel="canonical" href="https://www.theinnovex.tech/" />
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-<meta name="theme-color" content="#6E56CF" />
+<meta name="theme-color" content="#0A0D14" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Innovex" />
+<meta property="og:title" content="Innovex — Recover the revenue already sitting in your inbox." />
+<meta property="og:description" content="Innovex tracks open proposals, stalled clients, and unpaid invoices — then runs follow-up until you get a reply or get paid. Built for boutique agencies, consultants, and professional service firms." />
+<meta property="og:url" content="https://www.theinnovex.tech/" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Innovex — Recover the revenue already sitting in your inbox." />
+<meta name="twitter:description" content="Innovex tracks open proposals, stalled clients, and unpaid invoices — then runs follow-up until you get a reply or get paid." />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
   var sb = supabase.createClient(
@@ -440,6 +515,7 @@
     <nav class="primary">
       <div class="navlinks">
         <a href="#product" data-i18n="nav.product">Product</a>
+        <a href="#how-it-works" data-i18n="nav.how">How it works</a>
         <a href="#compare" data-i18n="nav.why">Why Innovex</a>
         <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
         <a href="#faq" data-i18n="nav.faq">FAQ</a>
@@ -489,22 +565,26 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <span class="eyebrow" data-i18n="hero.eyebrow">For agencies &amp; consulting firms · $1M–$20M revenue</span>
-        <h1><span data-i18n="hero.h1a">The deal isn't dead.</span><br><span data-i18n="hero.h1b">It just went quiet.</span></h1>
-        <p class="lede" data-i18n="hero.lede">Innovex tracks every open proposal and unpaid invoice, then keeps following up — in your voice, from your inbox — until your client signs or pays. No spreadsheets. No “did we ever hear back from them?”</p>
+        <span class="eyebrow" data-i18n="hero.eyebrow">Revenue Recovery Autopilot for Service Firms</span>
+        <h1 data-i18n="hero.h1">Recover the revenue already sitting in your inbox.</h1>
+        <p class="lede" data-i18n="hero.lede">Innovex tracks open proposals, stalled clients, and unpaid invoices — then runs follow-up until you get a reply or get paid.</p>
         <div class="hero-ctas">
-          <button type="button" class="btn btn-primary btn-lg" id="heroTrialBtn" data-i18n="hero.ctaTrial">Start your 7-day free trial — no credit card required</button>
-          <a class="btn btn-ghost" href="#product" data-i18n="hero.cta2">See how it works</a>
+          <button type="button" class="btn btn-primary btn-lg" id="heroTrialBtn" data-i18n="hero.ctaTrial" data-cta="hero_start_trial">Start your 7-day free trial — no credit card required</button>
+          <a class="btn btn-ghost" href="#product" data-i18n="hero.cta2" data-cta="hero_see_how">See how it works</a>
         </div>
         <p class="hero-note" style="margin-top:10px;">
-          <a href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20%E2%80%94%20early%20access&body=Firm%20name%3A%0AWhat%20we%20do%3A%0AHow%20many%20open%20proposals%2Finvoices%20are%20we%20juggling%20right%20now%3A" style="text-decoration:underline;" data-i18n="nav.cta">Apply for early access</a>
+          <a href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20%E2%80%94%20early%20access&body=Firm%20name%3A%0AWhat%20we%20do%3A%0AHow%20many%20open%20proposals%2Finvoices%20are%20we%20juggling%20right%20now%3A" style="text-decoration:underline;" data-i18n="nav.cta" data-cta="hero_apply_early_access">Apply for early access</a>
         </p>
-        <div class="hero-stats">
-          <div class="stat"><b class="tnum">$182K+</b><span data-i18n="hero.stat1">Tracked per firm in pilot cohort</span></div>
-          <div class="stat"><b class="tnum" data-i18n="hero.statval2">11 days</b><span data-i18n="hero.stat2">Faster to signed or paid, targeted</span></div>
-          <div class="stat"><b class="tnum">3.2×</b><span data-i18n="hero.stat3">More replies after auto follow-up</span></div>
+        <div class="hero-trust" data-reveal>
+          <p class="hero-trustline" data-i18n="hero.trust">Built for boutique agencies, consultants, and professional service firms. Now onboarding founding teams.</p>
+          <div class="hero-trust-row">
+            <span data-i18n="hero.trust1">No card required to start</span>
+            <span aria-hidden="true">·</span>
+            <span data-i18n="hero.trust2">Approve every message before it sends</span>
+            <span aria-hidden="true">·</span>
+            <span data-i18n="hero.trust3">Founding rate locked for life</span>
+          </div>
         </div>
-        <p class="hero-note" data-i18n="hero.note">Modeled from our design-partner pilot goals — not yet audited client results.</p>
       </div>
 
       <div data-reveal>
@@ -559,6 +639,42 @@
         <span class="tag" data-i18n="proof.tag2">Marketing consultancies</span>
         <span class="tag" data-i18n="proof.tag3">Dev &amp; design studios</span>
         <span class="tag" data-i18n="proof.tag4">Advisory &amp; strategy firms</span>
+      </div>
+      <blockquote class="founder-note" data-reveal>
+        <p data-i18n="founder.quote">"I kept watching firms do great work, then quietly eat the cost of proposals and invoices nobody followed up on. Innovex is the follow-up system I wanted to exist — not another CRM, just the part that was falling through."</p>
+        <cite data-i18n="founder.attr">— Christopher, Founder</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section id="problem">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow" data-i18n="problem.eyebrow">The problem</span>
+        <h2 style="margin-top:14px;" data-i18n="problem.h2">Nobody loses this revenue on purpose. It just goes quiet.</h2>
+        <p data-i18n="problem.p">Three ways it happens on every team we've talked to — none of them your team's fault, all of them fixable.</p>
+      </div>
+      <div class="card-grid-3" data-reveal>
+        <div class="info-card tone-accent">
+          <div class="icon-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+          <h3 data-i18n="problem1.h3">The proposal black hole</h3>
+          <p data-i18n="problem1.p">You send it, feel good about it, and move on to the next client. Three weeks later someone asks "did we ever hear back from them?" — and nobody knows.</p>
+        </div>
+        <div class="info-card tone-violet">
+          <div class="icon-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+          <h3 data-i18n="problem2.h3">Unpaid invoice drift</h3>
+          <p data-i18n="problem2.p">An invoice goes out, a client goes quiet, and chasing it feels awkward enough that it keeps sliding to next week — for weeks. That's cash you already earned.</p>
+        </div>
+        <div class="info-card tone-critical">
+          <div class="icon-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a5 5 0 0 0-5 5v1a4 4 0 0 0 0 8v1a3 3 0 0 0 6 0"/><path d="M12 3a5 5 0 0 1 5 5v1a4 4 0 0 1 0 8v1a3 3 0 0 1-6 0"/></svg></div>
+          <h3 data-i18n="problem3.h3">Memory-based ops</h3>
+          <p data-i18n="problem3.p">"Who's supposed to follow up on this?" only has an answer as long as the one person who remembers is around, paying attention, and not buried in three other client fires.</p>
+        </div>
+      </div>
+      <div class="cta-band" data-reveal>
+        <p data-i18n="problem.ctaText">If any of that sounds familiar, the fix isn't more discipline — it's taking it off a person's memory entirely.</p>
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('heroTrialBtn').click()" data-i18n="hero.ctaTrial" data-cta="problem_start_trial">Start your 7-day free trial — no credit card required</button>
       </div>
     </div>
   </section>
@@ -637,17 +753,17 @@
           <div class="panel-head"><span class="ptitle">REVENUE RECOVERED</span><span class="pmeta">Last 6 months</span></div>
           <div class="chart-wrap">
             <div class="bars" id="revbars">
-              <div class="bar" style="height:38%;background:#E4DFFB;"><span>$14K</span><em>Mar</em></div>
-              <div class="bar" style="height:52%;background:#CFC3F5;"><span>$19K</span><em>Apr</em></div>
-              <div class="bar" style="height:47%;background:#CFC3F5;"><span>$17K</span><em>May</em></div>
-              <div class="bar" style="height:68%;background:#B29EEE;"><span>$25K</span><em>Jun</em></div>
-              <div class="bar" style="height:74%;background:#B29EEE;"><span>$27K</span><em>Jul</em></div>
-              <div class="bar" style="height:100%;background:var(--accent);"><span>$38K</span><em>Aug</em></div>
+              <div class="bar" style="height:38%;background:var(--accent-soft);border:1px solid var(--border-strong);"><span>$14K</span><em>Mar</em></div>
+              <div class="bar" style="height:52%;background:color-mix(in srgb, var(--accent) 35%, var(--accent-soft));"><span>$19K</span><em>Apr</em></div>
+              <div class="bar" style="height:47%;background:color-mix(in srgb, var(--accent) 35%, var(--accent-soft));"><span>$17K</span><em>May</em></div>
+              <div class="bar" style="height:68%;background:color-mix(in srgb, var(--accent) 65%, var(--accent-soft));"><span>$25K</span><em>Jun</em></div>
+              <div class="bar" style="height:74%;background:var(--violet-soft);border:1px solid var(--violet);"><span>$27K</span><em>Jul</em></div>
+              <div class="bar" style="height:100%;background:var(--recovered);"><span style="color:var(--ink);">$38K</span><em>Aug</em></div>
             </div>
           </div>
           <div class="stat-tiles">
             <div class="tile"><b class="tnum">61%</b><span>Reply rate on follow-ups</span></div>
-            <div class="tile"><b class="tnum">$38,000</b><span>Recovered this month</span></div>
+            <div class="tile"><b class="tnum" style="color:var(--recovered);">$38,000</b><span>Recovered this month</span></div>
             <div class="tile"><b class="tnum">9.4</b><span>Avg. days to close</span></div>
           </div>
         </div>
@@ -655,19 +771,19 @@
     </div>
   </section>
 
-  <!-- ONBOARDING -->
-  <section style="background:var(--surface-sunk);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works" style="background:var(--surface-sunk);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
     <div class="wrap">
       <div class="section-head" data-reveal>
-        <span class="eyebrow" data-i18n="onb.eyebrow">Getting started</span>
+        <span class="eyebrow" data-i18n="onb.eyebrow">How it works</span>
         <h2 style="margin-top:14px;" data-i18n="onb.h2">No CRM migration. No new inbox.</h2>
         <p data-i18n="onb.p">Innovex works alongside what you already use — it doesn't ask you to replace it.</p>
       </div>
-      <div class="steps" data-reveal>
+      <div class="steps steps-4" data-reveal>
         <div class="step">
           <span class="num tnum">01</span>
-          <h4 data-i18n="step1.h4">Connect your inbox</h4>
-          <p data-i18n="step1.p">Gmail or Outlook, read-only on the threads you point us to — or forward items instead, no access required.</p>
+          <h4 data-i18n="step1.h4">Connect Gmail</h4>
+          <p data-i18n="step1.p">Read-only on the threads you point us to, or forward proposal and invoice emails instead — no inbox access required either way.</p>
         </div>
         <div class="step">
           <span class="num tnum">02</span>
@@ -676,9 +792,36 @@
         </div>
         <div class="step">
           <span class="num tnum">03</span>
-          <h4 data-i18n="step3.h4">Sequences start same day</h4>
-          <p data-i18n="step3.p">Set your cadence once. Innovex starts following up immediately and stands down the moment someone replies.</p>
+          <h4 data-i18n="step3new.h4">You approve the message</h4>
+          <p data-i18n="step3new.p">Innovex drafts the follow-up in your voice. Nothing sends until you click approve — one at a time, or set-and-forget once you trust it.</p>
         </div>
+        <div class="step">
+          <span class="num tnum">04</span>
+          <h4 data-i18n="step4.h4">It runs until they answer</h4>
+          <p data-i18n="step4.p">Follow-up continues on the cadence you set and stops the instant someone replies, signs, or pays — never a double-chase.</p>
+        </div>
+      </div>
+      <div class="cta-band" data-reveal>
+        <p data-i18n="onb.ctaText">Setup takes one afternoon, not a quarter — no migration, no new tool your team has to learn.</p>
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('heroTrialBtn').click()" data-i18n="hero.ctaTrial" data-cta="howitworks_start_trial">Start your 7-day free trial — no credit card required</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTEGRATIONS -->
+  <section id="integrations">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow" data-i18n="integ.eyebrow">Integrations</span>
+        <h2 style="margin-top:14px;" data-i18n="integ.h2">Honest about what's live today.</h2>
+        <p data-i18n="integ.p">We'd rather ship fewer integrations well than promise a list we haven't built yet.</p>
+      </div>
+      <div class="integrations-grid" data-reveal>
+        <div class="integration-card"><span class="name">Gmail</span><span class="status-pill live" data-i18n="integ.live">Live</span></div>
+        <div class="integration-card"><span class="name">Outlook / Microsoft 365</span><span class="status-pill soon" data-i18n="integ.soon">Coming soon</span></div>
+        <div class="integration-card"><span class="name">HubSpot &amp; other CRMs</span><span class="status-pill soon" data-i18n="integ.soon">Coming soon</span></div>
+        <div class="integration-card"><span class="name">QuickBooks / Stripe invoices</span><span class="status-pill soon" data-i18n="integ.soon">Coming soon</span></div>
+        <div class="integration-card"><span class="name">Slack notifications</span><span class="status-pill soon" data-i18n="integ.soon">Coming soon</span></div>
       </div>
     </div>
   </section>
@@ -716,6 +859,67 @@
     </div>
   </section>
 
+  <!-- USE CASES -->
+  <section id="who-its-for" style="background:var(--surface-sunk);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow" data-i18n="usecase.eyebrow">Who it's for</span>
+        <h2 style="margin-top:14px;" data-i18n="usecase.h2">Built around how service firms actually lose revenue.</h2>
+        <p data-i18n="usecase.p">Different work, same blind spot: something you already sold, going quiet.</p>
+      </div>
+      <div class="card-grid-3" data-reveal>
+        <div class="info-card tone-accent">
+          <div class="icon-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4a1 1 0 0 0 1 1h3l6 4V5l-6 4H4a1 1 0 0 0-1 1z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg></div>
+          <h3 data-i18n="usecase1.h3">Agencies</h3>
+          <p data-i18n="usecase1.p">Retainers renew off relationships, not paperwork. When a proposal for new work sits unanswered, that's growth you already earned, sitting on the table.</p>
+          <div class="tag-line" data-i18n="usecase1.tag">Creative, brand, marketing, dev &amp; design</div>
+        </div>
+        <div class="info-card tone-violet">
+          <div class="icon-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
+          <h3 data-i18n="usecase2.h3">Consultants</h3>
+          <p data-i18n="usecase2.p">You're the one selling and delivering. Chasing your own invoices between client calls is the first thing that gets skipped — until it's three invoices deep.</p>
+          <div class="tag-line" data-i18n="usecase2.tag">Solo and small independent practices</div>
+        </div>
+        <div class="info-card tone-critical">
+          <div class="icon-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-6h6v6"/></svg></div>
+          <h3 data-i18n="usecase3.h3">Professional service firms</h3>
+          <p data-i18n="usecase3.p">Multiple partners, multiple client books, one shared blind spot: nobody has a single view of what's stalled across the whole firm.</p>
+          <div class="tag-line" data-i18n="usecase3.tag">Advisory, strategy &amp; accounting practices</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROI -->
+  <section id="roi">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow" data-i18n="roi.eyebrow">Why the math works</span>
+        <h2 style="margin-top:14px;" data-i18n="roi.h2">Conservative math, not a growth-hack promise.</h2>
+        <p data-i18n="roi.p">We're pre-launch, so we won't hand you a fake "3.2x more replies" stat. Here's the actual arithmetic.</p>
+      </div>
+      <div class="roi-grid" data-reveal>
+        <div class="roi-card">
+          <b>1 invoice</b>
+          <span data-i18n="roi1.p">Often covers more than a year of Innovex on the Growth plan — everything after that is upside.</span>
+        </div>
+        <div class="roi-card">
+          <b>2–3 weeks</b>
+          <span data-i18n="roi2.p">How long a stalled proposal commonly sits before anyone manually follows up — if they follow up at all.</span>
+        </div>
+        <div class="roi-card">
+          <b>$0 extra pipeline</b>
+          <span data-i18n="roi3.p">Every recovered deal comes from work you already sold. No new leads, no extra sales cost to get it.</span>
+        </div>
+      </div>
+      <p class="roi-note" data-i18n="roi.note">These are modeled, conservative figures based on typical service-firm follow-up patterns — not audited customer results. We'll publish real numbers once our founding cohort has them.</p>
+      <div class="cta-band" data-reveal>
+        <p data-i18n="roi.ctaText">See what's already sitting in your own inbox before you decide.</p>
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('heroTrialBtn').click()" data-i18n="hero.ctaTrial" data-cta="roi_start_trial">Start your 7-day free trial — no credit card required</button>
+      </div>
+    </div>
+  </section>
+
   <!-- PRICING -->
   <section id="pricing" style="background:var(--surface-sunk);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
     <div class="wrap">
@@ -744,7 +948,8 @@
             <li data-i18n="plan1.li4">Revenue-at-risk board</li>
             <li data-i18n="plan1.li5">Email support</li>
           </ul>
-          <a class="btn btn-ghost btn-block" data-i18n="nav.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20Starter%20%E2%80%94%20early%20access">Apply for early access</a>
+          <a class="btn btn-ghost btn-block" data-i18n="nav.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20Starter%20%E2%80%94%20early%20access" data-cta="pricing_starter_apply">Apply for early access</a>
+          <div class="tag-line" style="text-align:center;margin-top:14px;" data-i18n="plan.founding">Founding rate — locked for life</div>
         </div>
 
         <div class="plan rec">
@@ -759,24 +964,30 @@
             <li data-i18n="plan2.li4">3 team seats included</li>
             <li data-i18n="plan2.li5">Priority support</li>
           </ul>
-          <a class="btn btn-primary btn-block" data-i18n="nav.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20Growth%20%E2%80%94%20early%20access">Apply for early access</a>
+          <a class="btn btn-primary btn-block" data-i18n="nav.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20Growth%20%E2%80%94%20early%20access" data-cta="pricing_growth_apply">Apply for early access</a>
+          <div class="tag-line" style="text-align:center;margin-top:14px;" data-i18n="plan.founding">Founding rate — locked for life</div>
         </div>
 
         <div class="plan">
           <h3>Firm</h3>
-          <p class="desc" data-i18n="plan3.desc">For firms with multiple partners or account managers chasing revenue.</p>
+          <p class="desc" data-i18n="plan3.desc">For firms with 3+ partners or account managers, each running their own book of clients.</p>
           <div class="price"><b class="tnum" data-monthly="$399" data-annual="$319">$399</b><span data-i18n="plan.unit3">/ month, from</span></div>
           <ul>
             <li data-i18n="plan3.li1">Unlimited active proposals + invoices</li>
             <li data-i18n="plan3.li2">Team assignments &amp; ownership</li>
             <li data-i18n="plan3.li3">Client-level revenue reporting</li>
-            <li data-i18n="plan3.li4">10 team seats included ($499 tier at 20+)</li>
-            <li data-i18n="plan3.li5">Dedicated onboarding</li>
+            <li data-i18n="plan3.li4">10 team seats included, $499 tier at 20+</li>
+            <li data-i18n="plan3.li5">White-glove setup call + dedicated Slack channel</li>
           </ul>
-          <a class="btn btn-ghost btn-block" data-i18n="plan3.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20Firm%20%E2%80%94%20early%20access">Talk to us</a>
+          <a class="btn btn-ghost btn-block" data-i18n="plan3.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20Firm%20%E2%80%94%20early%20access" data-cta="pricing_firm_talk">Talk to us</a>
+          <div class="tag-line" style="text-align:center;margin-top:14px;" data-i18n="plan.founding">Founding rate — locked for life</div>
         </div>
       </div>
       <p class="pricing-note" data-i18n="pricing.note">No credit card required to apply · Cancel anytime once live</p>
+      <div class="cta-band" data-reveal>
+        <p data-i18n="pricing.ctaText">Still deciding which plan? Start the trial — you can apply to any tier once you've seen it running on your own inbox.</p>
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('heroTrialBtn').click()" data-i18n="hero.ctaTrial" data-cta="pricing_start_trial">Start your 7-day free trial — no credit card required</button>
+      </div>
     </div>
   </section>
 
@@ -797,8 +1008,20 @@
           <p data-i18n="faq2.a">They shouldn't — they send from your real inbox, in a cadence and tone you set, and stop the moment a client replies, signs, or pays. You review and approve the sequence copy before it ever goes out.</p>
         </details>
         <details class="faq-item">
+          <summary><span data-i18n="faq6.q">Can I approve every message before it sends?</span></summary>
+          <p data-i18n="faq6.a">Yes — that's the default. Every drafted follow-up lands in an approval queue first. You read it, edit it if you want, and click approve before anything reaches your client. You can turn on set-and-forget sending later, per sequence, once you trust the drafts.</p>
+        </details>
+        <details class="faq-item">
           <summary><span data-i18n="faq3.q">Do we have to give you access to our whole inbox?</span></summary>
           <p data-i18n="faq3.a">No. You can forward specific proposal or invoice threads to your Innovex address instead of connecting an inbox at all.</p>
+        </details>
+        <details class="faq-item">
+          <summary><span data-i18n="faq7.q">How long does setup actually take?</span></summary>
+          <p data-i18n="faq7.a">Most firms are connected and seeing their first board of open proposals and invoices within an hour. There's no data migration and nothing to import — Innovex reads what's already in your inbox.</p>
+        </details>
+        <details class="faq-item">
+          <summary><span data-i18n="faq8.q">What happens after a client replies or pays?</span></summary>
+          <p data-i18n="faq8.a">The sequence for that thread stops immediately — nobody gets a follow-up after they've already responded. A signed proposal or paid invoice moves to "Signed / Paid" on your board and counts toward your recovered-revenue reporting.</p>
         </details>
         <details class="faq-item">
           <summary><span data-i18n="faq4.q">We're smaller than $1M, or bigger than $20M — still worth talking?</span></summary>
@@ -815,10 +1038,12 @@
   <!-- FINAL CTA -->
   <section class="final-cta">
     <div class="wrap" data-reveal>
-      <h2 data-i18n="fc.h2">Stop letting revenue go quiet.</h2>
+      <span class="eyebrow" style="justify-content:center;width:100%;" data-i18n="fc.eyebrow">Now onboarding founding teams</span>
+      <h2 style="margin-top:14px;" data-i18n="fc.h2">Stop letting revenue go quiet.</h2>
       <p data-i18n="fc.p">Tell us how many open proposals and invoices you're juggling right now — we'll show you what Innovex would do with them.</p>
       <div class="hero-ctas">
-        <a class="btn btn-primary" data-i18n="nav.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20%E2%80%94%20early%20access&body=Firm%20name%3A%0AWhat%20we%20do%3A%0AHow%20many%20open%20proposals%2Finvoices%20are%20we%20juggling%20right%20now%3A">Apply for early access</a>
+        <button type="button" class="btn btn-primary btn-lg" onclick="document.getElementById('heroTrialBtn').click()" data-i18n="hero.ctaTrial" data-cta="final_start_trial">Start your 7-day free trial — no credit card required</button>
+        <a class="btn btn-ghost" data-i18n="nav.cta" href="mailto:christopherdarius30@yahoo.com?subject=Innovex%20%E2%80%94%20early%20access&body=Firm%20name%3A%0AWhat%20we%20do%3A%0AHow%20many%20open%20proposals%2Finvoices%20are%20we%20juggling%20right%20now%3A" data-cta="final_apply_early_access">Apply for early access</a>
       </div>
     </div>
   </section>
@@ -911,6 +1136,19 @@
 </div>
 
 <script>
+  // Analytics hook: fires on every [data-cta] click. No-ops until a real analytics
+  // provider is installed -- wires into whichever of these is added later.
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-cta]');
+    if (!el) return;
+    var name = el.getAttribute('data-cta');
+    try {
+      if (window.plausible) window.plausible(name);
+      else if (window.gtag) window.gtag('event', name, { event_category: 'cta' });
+      else if (window.dataLayer) window.dataLayer.push({ event: name });
+    } catch (err) {}
+  });
+
   function setBilling(mode) {
     document.getElementById('btn-monthly').classList.toggle('active', mode === 'monthly');
     document.getElementById('btn-annual').classList.toggle('active', mode === 'annual');
@@ -922,13 +1160,18 @@
     en: {
       "topstrip.text": "Now onboarding a limited number of design partners for Q4 2026.",
       "topstrip.link": "See partner pricing →",
-      "nav.product": "Product", "nav.why": "Why Innovex", "nav.pricing": "Pricing", "nav.faq": "FAQ",
+      "nav.product": "Product", "nav.how": "How it works", "nav.why": "Why Innovex", "nav.pricing": "Pricing", "nav.faq": "FAQ",
       "nav.cta": "Apply for early access", "nav.ctaShort": "Apply",
-      "hero.eyebrow": "For agencies & consulting firms · $1M–$20M revenue",
+      "hero.eyebrow": "Revenue Recovery Autopilot for Service Firms",
+      "hero.h1": "Recover the revenue already sitting in your inbox.",
       "hero.h1a": "The deal isn't dead.", "hero.h1b": "It just went quiet.",
-      "hero.lede": "Innovex tracks every open proposal and unpaid invoice, then keeps following up — in your voice, from your inbox — until your client signs or pays. No spreadsheets. No “did we ever hear back from them?”",
+      "hero.lede": "Innovex tracks open proposals, stalled clients, and unpaid invoices — then runs follow-up until you get a reply or get paid.",
       "hero.cta2": "See how it works",
       "hero.ctaTrial": "Start your 7-day free trial — no credit card required",
+      "hero.trust": "Built for boutique agencies, consultants, and professional service firms. Now onboarding founding teams.",
+      "hero.trust1": "No card required to start",
+      "hero.trust2": "Approve every message before it sends",
+      "hero.trust3": "Founding rate locked for life",
       "hero.stat1": "Tracked per firm in pilot cohort", "hero.statval2": "11 days",
       "hero.stat2": "Faster to signed or paid, targeted",
       "hero.stat3": "More replies after auto follow-up",
@@ -936,6 +1179,18 @@
       "proof.text": "Built for the firms that run on proposals and invoices, not pipelines and leads —",
       "proof.tag1": "Creative & branding agencies", "proof.tag2": "Marketing consultancies",
       "proof.tag3": "Dev & design studios", "proof.tag4": "Advisory & strategy firms",
+      "founder.quote": "\"I kept watching firms do great work, then quietly eat the cost of proposals and invoices nobody followed up on. Innovex is the follow-up system I wanted to exist — not another CRM, just the part that was falling through.\"",
+      "founder.attr": "— Christopher, Founder",
+      "problem.eyebrow": "The problem",
+      "problem.h2": "Nobody loses this revenue on purpose. It just goes quiet.",
+      "problem.p": "Three ways it happens on every team we've talked to — none of them your team's fault, all of them fixable.",
+      "problem1.h3": "The proposal black hole",
+      "problem1.p": "You send it, feel good about it, and move on to the next client. Three weeks later someone asks \"did we ever hear back from them?\" — and nobody knows.",
+      "problem2.h3": "Unpaid invoice drift",
+      "problem2.p": "An invoice goes out, a client goes quiet, and chasing it feels awkward enough that it keeps sliding to next week — for weeks. That's cash you already earned.",
+      "problem3.h3": "Memory-based ops",
+      "problem3.p": "\"Who's supposed to follow up on this?\" only has an answer as long as the one person who remembers is around, paying attention, and not buried in three other client fires.",
+      "problem.ctaText": "If any of that sounds familiar, the fix isn't more discipline — it's taking it off a person's memory entirely.",
       "product.eyebrow": "Product",
       "product.h2": "Everything the follow-up needs, nothing your team has to remember.",
       "product.p": "Three parts, one job: stop revenue from going quiet.",
@@ -954,12 +1209,20 @@
       "f3.li1": "Revenue recovered, by month and by client",
       "f3.li2": "Response and close rate for every sequence",
       "f3.li3": "One-click PDF report for partner meetings",
-      "onb.eyebrow": "Getting started", "onb.h2": "No CRM migration. No new inbox.",
+      "onb.eyebrow": "How it works", "onb.h2": "No CRM migration. No new inbox.",
       "onb.p": "Innovex works alongside what you already use — it doesn't ask you to replace it.",
-      "step1.h4": "Connect your inbox",
-      "step1.p": "Gmail or Outlook, read-only on the threads you point us to — or forward items instead, no access required.",
+      "onb.ctaText": "Setup takes one afternoon, not a quarter — no migration, no new tool your team has to learn.",
+      "step1.h4": "Connect Gmail",
+      "step1.p": "Read-only on the threads you point us to, or forward proposal and invoice emails instead — no inbox access required either way.",
       "step2.h4": "Innovex finds what's open",
       "step2.p": "Every outstanding proposal and unpaid invoice gets pulled onto one board, ranked by dollars and days quiet.",
+      "step3new.h4": "You approve the message",
+      "step3new.p": "Innovex drafts the follow-up in your voice. Nothing sends until you click approve — one at a time, or set-and-forget once you trust it.",
+      "step4.h4": "It runs until they answer",
+      "step4.p": "Follow-up continues on the cadence you set and stops the instant someone replies, signs, or pays — never a double-chase.",
+      "integ.eyebrow": "Integrations", "integ.h2": "Honest about what's live today.",
+      "integ.p": "We'd rather ship fewer integrations well than promise a list we haven't built yet.",
+      "integ.live": "Live", "integ.soon": "Coming soon",
       "step3.h4": "Sequences start same day",
       "step3.p": "Set your cadence once. Innovex starts following up immediately and stands down the moment someone replies.",
       "cmp.eyebrow": "Why Innovex",
@@ -976,6 +1239,26 @@
       "cmp.ongoing": "Ongoing effort", "cmp.weeks": "Weeks", "cmp.days": "Days",
       "cmp.sameday": "Same day", "cmp.yes": "Yes",
       "cmp.caption": "Indicative comparison based on typical capabilities of generic CRMs and invoicing tools as of 2026.",
+      "usecase.eyebrow": "Who it's for",
+      "usecase.h2": "Built around how service firms actually lose revenue.",
+      "usecase.p": "Different work, same blind spot: something you already sold, going quiet.",
+      "usecase1.h3": "Agencies",
+      "usecase1.p": "Retainers renew off relationships, not paperwork. When a proposal for new work sits unanswered, that's growth you already earned, sitting on the table.",
+      "usecase1.tag": "Creative, brand, marketing, dev & design",
+      "usecase2.h3": "Consultants",
+      "usecase2.p": "You're the one selling and delivering. Chasing your own invoices between client calls is the first thing that gets skipped — until it's three invoices deep.",
+      "usecase2.tag": "Solo and small independent practices",
+      "usecase3.h3": "Professional service firms",
+      "usecase3.p": "Multiple partners, multiple client books, one shared blind spot: nobody has a single view of what's stalled across the whole firm.",
+      "usecase3.tag": "Advisory, strategy & accounting practices",
+      "roi.eyebrow": "Why the math works",
+      "roi.h2": "Conservative math, not a growth-hack promise.",
+      "roi.p": "We're pre-launch, so we won't hand you a fake \"3.2x more replies\" stat. Here's the actual arithmetic.",
+      "roi1.p": "Often covers more than a year of Innovex on the Growth plan — everything after that is upside.",
+      "roi2.p": "How long a stalled proposal commonly sits before anyone manually follows up — if they follow up at all.",
+      "roi3.p": "Every recovered deal comes from work you already sold. No new leads, no extra sales cost to get it.",
+      "roi.note": "These are modeled, conservative figures based on typical service-firm follow-up patterns — not audited customer results. We'll publish real numbers once our founding cohort has them.",
+      "roi.ctaText": "See what's already sitting in your own inbox before you decide.",
       "pricing.eyebrow": "Pricing",
       "pricing.h2": "Priced for firms doing real revenue — not race-to-the-bottom freelancer tools.",
       "pricing.p": "We're onboarding a limited number of design partners at these rates, locked in for life.",
@@ -989,12 +1272,14 @@
       "plan2.li1": "Up to 100 active proposals + invoices", "plan2.li2": "Unlimited sequence templates",
       "plan2.li3": "Revenue recovered dashboard + monthly PDF", "plan2.li4": "3 team seats included",
       "plan2.li5": "Priority support",
-      "plan3.desc": "For firms with multiple partners or account managers chasing revenue.",
+      "plan3.desc": "For firms with 3+ partners or account managers, each running their own book of clients.",
       "plan.unit3": "/ month, from",
       "plan3.li1": "Unlimited active proposals + invoices", "plan3.li2": "Team assignments & ownership",
-      "plan3.li3": "Client-level revenue reporting", "plan3.li4": "10 team seats included ($499 tier at 20+)",
-      "plan3.li5": "Dedicated onboarding", "plan3.cta": "Talk to us",
+      "plan3.li3": "Client-level revenue reporting", "plan3.li4": "10 team seats included, $499 tier at 20+",
+      "plan3.li5": "White-glove setup call + dedicated Slack channel", "plan3.cta": "Talk to us",
+      "plan.founding": "Founding rate — locked for life",
       "pricing.note": "No credit card required to apply · Cancel anytime once live",
+      "pricing.ctaText": "Still deciding which plan? Start the trial — you can apply to any tier once you've seen it running on your own inbox.",
       "faq.h2": "Questions firms actually ask us",
       "faq1.q": "Does this replace our CRM?",
       "faq1.a": "No. Innovex isn't a CRM — it doesn't do lead scoring or deal notes. It's focused on the money already sitting in your pipeline: proposals waiting on a signature, invoices waiting on payment.",
@@ -1006,6 +1291,13 @@
       "faq4.a": "We're building specifically for firms in that range — small enough that one stalled invoice matters, big enough that you can't chase every one by hand. Reach out anyway; we're still shaping who this fits.",
       "faq5.q": "What does “design partner” pricing actually mean?",
       "faq5.a": "We're pre-launch and working closely with a small group of firms to build the product. Design partners get the rate on this page locked in for life, direct input on the roadmap, and white-glove setup — in exchange for feedback and a short case study once we see results.",
+      "faq6.q": "Can I approve every message before it sends?",
+      "faq6.a": "Yes — that's the default. Every drafted follow-up lands in an approval queue first. You read it, edit it if you want, and click approve before anything reaches your client. You can turn on set-and-forget sending later, per sequence, once you trust the drafts.",
+      "faq7.q": "How long does setup actually take?",
+      "faq7.a": "Most firms are connected and seeing their first board of open proposals and invoices within an hour. There's no data migration and nothing to import — Innovex reads what's already in your inbox.",
+      "faq8.q": "What happens after a client replies or pays?",
+      "faq8.a": "The sequence for that thread stops immediately — nobody gets a follow-up after they've already responded. A signed proposal or paid invoice moves to \"Signed / Paid\" on your board and counts toward your recovered-revenue reporting.",
+      "fc.eyebrow": "Now onboarding founding teams",
       "fc.h2": "Stop letting revenue go quiet.",
       "fc.p": "Tell us how many open proposals and invoices you're juggling right now — we'll show you what Innovex would do with them.",
       "foot.tagline": "The follow-up autopilot for agencies and consulting firms. We stop proposals and invoices from going dark.",
