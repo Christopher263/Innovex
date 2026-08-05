@@ -988,7 +988,7 @@
             <li data-i18n="plan3.li4">10 team seats included, $499 tier at 20+</li>
             <li data-i18n="plan3.li5">White-glove setup call + dedicated Slack channel</li>
           </ul>
-          <button type="button" class="btn btn-ghost btn-block" data-i18n="plan3.cta" data-open-contact data-cta="pricing_firm_talk">Talk to us</button>
+          <button type="button" class="btn btn-ghost btn-block" data-i18n="nav.cta" onclick="document.getElementById('heroTrialBtn').click()" data-cta="pricing_firm_start_trial">Start free trial</button>
           <div class="tag-line" style="text-align:center;margin-top:14px;" data-i18n="plan.founding">Founding rate — locked for 12 months</div>
         </div>
       </div>
@@ -1049,10 +1049,9 @@
     <div class="wrap" data-reveal>
       <span class="eyebrow" style="justify-content:center;width:100%;" data-i18n="fc.eyebrow">Now onboarding a limited group of founding firms</span>
       <h2 style="margin-top:14px;" data-i18n="fc.h2">Stop letting revenue go quiet.</h2>
-      <p data-i18n="fc.p">Tell us how many open proposals and invoices you're juggling right now — we'll show you what Innovex would do with them.</p>
+      <p data-i18n="fc.p">See what's already sitting in your own inbox — connect it and Innovex will show you.</p>
       <div class="hero-ctas">
         <button type="button" class="btn btn-primary btn-lg" onclick="document.getElementById('heroTrialBtn').click()" data-i18n="hero.ctaTrial" data-cta="final_start_trial">Start your 7-day free trial — no credit card required</button>
-        <button type="button" class="btn btn-ghost" data-i18n="plan3.cta" data-open-contact data-cta="final_talk_to_us">Talk to us</button>
       </div>
     </div>
   </section>
@@ -1082,7 +1081,7 @@
         <div class="foot-col">
           <h5 data-i18n="foot.company">Company</h5>
           <a href="#faq" data-i18n="nav.faq">FAQ</a>
-          <a href="#" data-open-contact data-i18n="plan3.cta" data-cta="footer_talk_to_us">Talk to us</a>
+          <a href="#" onclick="event.preventDefault(); document.getElementById('heroTrialBtn').click();" data-i18n="nav.cta" data-cta="footer_start_trial">Start free trial</a>
           <a href="privacy.html" data-i18n="foot.privacy">Privacy Policy</a>
           <a href="terms.html" data-i18n="foot.terms">Terms of Service</a>
         </div>
@@ -1145,50 +1144,6 @@
       <h2>You're in, <span id="successName">there</span>.</h2>
       <p>Your 7-day free trial is active — no card, no catch. It runs until <span class="trial-until" id="trialUntil"></span>.</p>
       <a class="btn btn-primary btn-block" id="goToDashboard" href="#" target="_blank" rel="noopener">Go to your dashboard</a>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="contactOverlay" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">
-  <div class="modal-box">
-    <button type="button" class="modal-close" id="contactModalClose" aria-label="Close">×</button>
-
-    <div class="modal-view active" id="contactViewForm">
-      <h2 id="contactModalTitle">Talk to us</h2>
-      <p class="modal-sub" id="contactModalSub">Tell us a bit about your firm and we'll reply within 1 business day.</p>
-
-      <form id="contactForm">
-        <div class="field">
-          <label for="cFldName">Full name</label>
-          <input type="text" id="cFldName" autocomplete="name" />
-        </div>
-        <div class="field">
-          <label for="cFldEmail">Work email</label>
-          <input type="email" id="cFldEmail" autocomplete="email" />
-        </div>
-        <div class="field">
-          <label for="cFldFirm">Firm name</label>
-          <input type="text" id="cFldFirm" autocomplete="organization" />
-        </div>
-        <div class="field">
-          <label for="cFldVolume">Approx. open proposals/invoices right now</label>
-          <input type="text" id="cFldVolume" placeholder="e.g. 8" inputmode="numeric" />
-        </div>
-        <div class="field">
-          <label for="cFldWebsite">Website <span style="font-weight:400;color:var(--ink-faint);">(optional)</span></label>
-          <input type="text" id="cFldWebsite" autocomplete="url" placeholder="yourfirm.com" />
-        </div>
-        <div class="field-error" id="contactError">Enter your name, work email, and firm name to continue.</div>
-        <button type="submit" class="btn btn-primary btn-block" id="contactSubmit">Talk to us</button>
-      </form>
-      <p class="modal-trust">No spam. We only use this to reply about Innovex.</p>
-    </div>
-
-    <div class="modal-view success" id="contactViewSuccess">
-      <div class="success-icon">✓</div>
-      <h2>Thanks, <span id="contactSuccessName">there</span>.</h2>
-      <p>We've got your details — we'll reply within 1 business day.</p>
-      <button type="button" class="btn btn-primary btn-block" id="contactSuccessClose">Close</button>
     </div>
   </div>
 </div>
@@ -1980,79 +1935,6 @@
     viewSuccess.classList.add('active');
   }
 
-  /* ---------- contact / lead-capture modal (real form, no mailto) ---------- */
-  var contactOverlay = document.getElementById('contactOverlay');
-  var contactViewForm = document.getElementById('contactViewForm');
-  var contactViewSuccess = document.getElementById('contactViewSuccess');
-
-  function openContactModal() {
-    contactOverlay.classList.add('open');
-    contactViewForm.classList.add('active');
-    contactViewSuccess.classList.remove('active');
-    document.getElementById('contactError').classList.remove('show');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeContactModal() {
-    contactOverlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  document.getElementById('contactModalClose').addEventListener('click', closeContactModal);
-  contactOverlay.addEventListener('click', function (e) { if (e.target === contactOverlay) closeContactModal(); });
-  document.getElementById('contactSuccessClose').addEventListener('click', closeContactModal);
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && contactOverlay.classList.contains('open')) closeContactModal(); });
-  document.querySelectorAll('[data-open-contact]').forEach(function (btn) {
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      openContactModal();
-    });
-  });
-
-  document.getElementById('contactForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    var name = document.getElementById('cFldName').value.trim();
-    var email = document.getElementById('cFldEmail').value.trim();
-    var firm = document.getElementById('cFldFirm').value.trim();
-    var volume = document.getElementById('cFldVolume').value.trim();
-    var website = document.getElementById('cFldWebsite').value.trim();
-    var errorEl = document.getElementById('contactError');
-    var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    if (!name || !emailOk || !firm) {
-      errorEl.textContent = 'Enter your name, work email, and firm name to continue.';
-      errorEl.classList.add('show');
-      return;
-    }
-    errorEl.classList.remove('show');
-    var submitBtn = document.getElementById('contactSubmit');
-    submitBtn.disabled = true;
-    try {
-      var res = await sb.from('lead_submissions').insert({
-        full_name: name,
-        work_email: email,
-        firm_name: firm,
-        open_items_estimate: volume || null,
-        website: website || null,
-        source: window.location.pathname
-      });
-      if (res.error) {
-        errorEl.textContent = 'Something went wrong — try again, or reach us another way.';
-        errorEl.classList.add('show');
-        submitBtn.disabled = false;
-        return;
-      }
-      try {
-        if (window.plausible) window.plausible('contact_form_submit');
-        else if (window.gtag) window.gtag('event', 'contact_form_submit', { event_category: 'form' });
-        else if (window.dataLayer) window.dataLayer.push({ event: 'contact_form_submit' });
-      } catch (err) {}
-      document.getElementById('contactSuccessName').textContent = name.split(' ')[0] || name;
-      contactViewForm.classList.remove('active');
-      contactViewSuccess.classList.add('active');
-    } catch (err) {
-      errorEl.textContent = 'Something went wrong — try again, or reach us another way.';
-      errorEl.classList.add('show');
-      submitBtn.disabled = false;
-    }
-  });
 </script>
 </body>
 </html>
