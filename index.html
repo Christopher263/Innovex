@@ -1082,8 +1082,8 @@
           <h5 data-i18n="foot.company">Company</h5>
           <a href="#faq" data-i18n="nav.faq">FAQ</a>
           <a href="#" onclick="event.preventDefault(); document.getElementById('heroTrialBtn').click();" data-i18n="nav.cta" data-cta="footer_start_trial">Start free trial</a>
-          <a href="privacy.html" data-i18n="foot.privacy">Privacy Policy</a>
-          <a href="terms.html" data-i18n="foot.terms">Terms of Service</a>
+          <a href="/privacy" data-i18n="foot.privacy">Privacy Policy</a>
+          <a href="/terms" data-i18n="foot.terms">Terms of Service</a>
         </div>
       </div>
     </div>
@@ -1775,7 +1775,7 @@
   }
 
   /* ---------- signup modal ---------- */
-  var DASHBOARD_URL = 'dashboard.html';
+  var DASHBOARD_URL = '/dashboard';
   var INVITE_TOKEN = new URLSearchParams(window.location.search).get('invite');
   var overlay = document.getElementById('signupOverlay');
   var viewAuth = document.getElementById('viewAuth');
@@ -1835,7 +1835,7 @@
       var result = await sb.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/dashboard.html',
+          redirectTo: window.location.origin + '/dashboard',
           scopes: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send',
           queryParams: { access_type: 'offline', prompt: 'consent' }
         }

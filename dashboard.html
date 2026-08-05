@@ -900,7 +900,7 @@
   document.getElementById('btnInviteTeammate').addEventListener('click', async function () {
     var res = await sb.from('workspace_invites').insert({ workspace_id: CURRENT_WORKSPACE_ID, role: 'member' }).select('token').single();
     if (res.error) { toast('Could not create invite: ' + res.error.message); return; }
-    var link = window.location.origin + '/index.html?invite=' + encodeURIComponent(res.data.token);
+    var link = window.location.origin + '/?invite=' + encodeURIComponent(res.data.token);
     document.getElementById('inviteLinkInput').value = link;
     document.getElementById('inviteLinkBox').hidden = false;
   });
@@ -937,7 +937,7 @@
       var res = await sb.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/dashboard.html',
+          redirectTo: window.location.origin + '/dashboard',
           scopes: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send',
           queryParams: { access_type: 'offline', prompt: 'consent' }
         }
@@ -1134,7 +1134,7 @@
     try {
       var sessionRes = await sb.auth.getSession();
       var session = sessionRes.data && sessionRes.data.session;
-      if (!session) { window.location.href = 'index.html'; return; }
+      if (!session) { window.location.href = '/'; return; }
       CURRENT_USER = session.user;
       var whoName = document.querySelector('.side-foot .who b');
       var whoAvatar = document.querySelector('.side-foot .avatar');
