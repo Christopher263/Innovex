@@ -335,6 +335,12 @@
     .autoplay-live-badge .dot, .draft-card.autoplay-spot, .kcard.autoplay-spot { animation: none; }
   }
 
+  /* ---------- boot gate: nothing paints until the sample workspace is seeded and rendered,
+     so a slow device/extension can never show an unseeded $0/empty flash ---------- */
+  .boot-loading { position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--ink-faint); font-size: 14px; }
+  html.ready .boot-loading { display: none; }
+  html:not(.ready) .preview-bar, html:not(.ready) .app-shell { visibility: hidden; }
+
   @media print {
     body { background: #fff; color: #18151F; }
     .sidebar, .toast, .topbar button, .preview-bar { display: none !important; }
@@ -355,6 +361,13 @@
 </script>
 </head>
 <body>
+
+<div class="boot-loading" id="bootLoading">Loading your live preview…</div>
+<script>
+  // Fail-open safety net: if the main script throws before it can reveal the page itself,
+  // don't leave a visitor stuck behind the loading screen forever.
+  setTimeout(function () { document.documentElement.classList.add('ready'); }, 2500);
+</script>
 
 <div class="preview-bar">
   <div><strong>You're viewing a live preview.</strong> Sample data for a fictional boutique agency — nothing here is a real client, and nothing you do on this page is saved.</div>
@@ -1558,6 +1571,7 @@
   });
 
   renderAll();
+  document.documentElement.classList.add('ready');
 </script>
 </body>
 </html>
