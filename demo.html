@@ -286,6 +286,18 @@
   /* ---------- action bar ---------- */
   .action-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
 
+  /* ---------- guided checklist ---------- */
+  .checklist-card { margin-bottom: 20px; display: none; }
+  .checklist-card.show { display: block; }
+  .checklist-list { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; }
+  .checklist-item { display: flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 13.5px; color: var(--ink-soft); }
+  .checklist-item.done { color: var(--ink-faint); text-decoration: line-through; }
+  .checklist-check { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border-strong); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+  .checklist-item.done .checklist-check { background: var(--good); border-color: var(--good); color: #fff; }
+
+  /* ---------- sequence-step badge ---------- */
+  .seq-step-badge { display: inline-flex; align-items: center; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; background: var(--violet-soft); color: var(--violet-strong); white-space: nowrap; }
+
   /* ---------- due labels ---------- */
   .due-label { font-size: 11px; padding: 2px 7px; border-radius: 999px; font-weight: 700; white-space: nowrap; }
   .due-label.today { background: var(--warning-soft); color: var(--warning); }
@@ -413,6 +425,11 @@
         <button class="btn btn-primary" id="btnGoPipeline" type="button">Open pipeline board</button>
       </div>
       <div class="content">
+        <div class="card checklist-card" id="checklistCard">
+          <div class="card-head"><h2>Try it yourself</h2><button class="btn btn-sm" id="btnDismissChecklist" type="button">Dismiss</button></div>
+          <div class="checklist-list" id="checklistList"></div>
+        </div>
+
         <div class="stat-row">
           <div class="stat-card"><div class="label">Revenue at risk</div><b class="tnum" id="statAtRisk">$0</b><div class="delta warn">Across <span id="statAtRiskCount">0</span> open items</div></div>
           <div class="stat-card"><div class="label">Recovered this month</div><b class="tnum" id="statRecovered" style="color:var(--recovered);">$0</b><div class="delta">Since Innovex started watching</div></div>
@@ -731,7 +748,12 @@
         '<td><button class="btn btn-sm" data-followup="' + i.id + '" data-hasdraft="' + (hasDraft ? '1' : '0') + '" type="button">' + (hasDraft ? 'View draft' : 'Follow up now') + '</button></td>' +
         '</tr>';
     }).join('');
-    document.getElementById('riskTableBody').innerHTML = rows || '<tr><td colspan="6" class="empty-hint">Nothing at risk right now.</td></tr>';
+    var emptyRowHtml = state.items.length === 0
+      ? '<tr><td colspan="6" class="empty-hint">Your workspace is empty. <button class="btn btn-sm" id="btnRestoreWorkspace" type="button">Restore sample workspace</button></td></tr>'
+      : '<tr><td colspan="6" class="empty-hint">Nothing at risk right now.</td></tr>';
+    document.getElementById('riskTableBody').innerHTML = rows || emptyRowHtml;
+    var restoreBtn = document.getElementById('btnRestoreWorkspace');
+    if (restoreBtn) restoreBtn.addEventListener('click', function () { state = buildInitialState(); renderAll(); toast('Sample workspace restored.'); });
     document.querySelectorAll('[data-followup]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         if (btn.getAttribute('data-hasdraft') === '1') {
@@ -760,7 +782,42 @@
     document.getElementById('statAvgDays').textContent = avgDays != null ? avgDays.toFixed(1) : '—';
 
     refreshApprovalBadge();
+    renderChecklist();
   }
+
+  var demoMarkedPaidThisSession = false;
+  var CHECKLIST_DISMISS_KEY = 'innovex_demo_checklist_dismissed';
+
+  function renderChecklist() {
+    var card = document.getElementById('checklistCard');
+    var dismissed = false;
+    try { dismissed = sessionStorage.getItem(CHECKLIST_DISMISS_KEY) === '1'; } catch (e) {}
+    if (dismissed) { card.classList.remove('show'); return; }
+    var approvedAny = state.drafts.some(function (d) { return d.status === 'sent'; });
+    var startedTrial = false;
+    try { startedTrial = sessionStorage.getItem('innovex_demo_trial_clicked') === '1'; } catch (e) {}
+    var steps = [
+      { label: 'Review the revenue sitting at risk', done: true },
+      { label: 'Approve a follow-up in the Approval Queue', done: approvedAny },
+      { label: 'Mark an item paid or signed', done: demoMarkedPaidThisSession },
+      { label: 'Start your free trial', done: startedTrial }
+    ];
+    document.getElementById('checklistList').innerHTML = steps.map(function (s) {
+      return '<div class="checklist-item' + (s.done ? ' done' : '') + '"><span class="checklist-check">' + (s.done ? '✓' : '') + '</span>' + escapeHtml(s.label) + '</div>';
+    }).join('');
+    card.classList.add('show');
+  }
+
+  document.getElementById('btnDismissChecklist').addEventListener('click', function () {
+    try { sessionStorage.setItem(CHECKLIST_DISMISS_KEY, '1'); } catch (e) {}
+    document.getElementById('checklistCard').classList.remove('show');
+  });
+
+  document.querySelectorAll('a[href^="/?trial"]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      try { sessionStorage.setItem('innovex_demo_trial_clicked', '1'); } catch (e) {}
+    });
+  });
 
   function refreshApprovalBadge() {
     var count = state.drafts.filter(function (d) { return d.status === 'pending_approval'; }).length;
@@ -841,7 +898,7 @@
   function markItemPaid(itemId, btn) {
     if (btn) btn.disabled = true;
     var item = state.items.filter(function (i) { return i.id === itemId; })[0];
-    if (item) { item.stage = STAGE_INDEX.signed_paid; item.overdue = false; item.days = 0; addRevenueEvent(item); }
+    if (item) { item.stage = STAGE_INDEX.signed_paid; item.overdue = false; item.days = 0; addRevenueEvent(item); demoMarkedPaidThisSession = true; }
     state.drafts = state.drafts.filter(function (d) { return d.email_thread_id !== itemId; });
     renderKanban();
     renderApprovals();
@@ -1017,6 +1074,16 @@
     return item.days >= final ? 'final' : (item.days >= second ? 'second' : 'first');
   }
 
+  function sequenceDayLabel(item) {
+    var s = state.settings || {};
+    var first = s.first_followup_days || 3;
+    var second = s.second_followup_days || 7;
+    var final = s.final_followup_days || 14;
+    var tier = draftTier(item);
+    var day = tier === 'final' ? final : (tier === 'second' ? second : first);
+    return 'Day ' + day;
+  }
+
   function craftDraft(item) {
     var s = state.settings || {};
     var tone = s.tone || 'professional';
@@ -1125,8 +1192,10 @@
       return;
     }
     el.innerHTML = pending.map(function (d) {
+      var relatedItem = state.items.filter(function (i) { return i.id === d.email_thread_id; })[0];
+      var dayBadge = relatedItem ? '<span class="seq-step-badge">' + sequenceDayLabel(relatedItem) + '</span> ' : '';
       return '<div class="draft-card">' +
-        '<div class="draft-top"><div><h3>' + escapeHtml(d.client_name) + ' — ' + escapeHtml(d.subject) + '</h3>' +
+        '<div class="draft-top"><div><h3>' + dayBadge + escapeHtml(d.client_name) + ' — ' + escapeHtml(d.subject) + '</h3>' +
         '<div class="reason">' + escapeHtml(d.draft_reason || '') + '</div></div>' +
         '<div class="draft-actions">' +
         '<button class="btn btn-sm" data-edit="' + d.id + '" type="button">Edit</button>' +
@@ -1405,6 +1474,8 @@
   var MALE_VOICE_HINTS = ['david', 'mark', 'guy', 'ryan', 'james', 'daniel', 'alex', 'fred', 'tom', 'male', 'man', 'george', 'oliver'];
   var FEMALE_VOICE_HINTS = ['zira', 'aria', 'jenny', 'samantha', 'victoria', 'karen', 'female', 'woman', 'susan', 'emma', 'ava', 'zoe', 'hazel'];
 
+  var PREMIUM_VOICE_HINTS = ['natural', 'online', 'enhanced', 'premium', 'neural'];
+
   function pickVoice() {
     if (!narrationSupported) return null;
     var voices = window.speechSynthesis.getVoices() || [];
@@ -1415,12 +1486,18 @@
       var n = v.name.toLowerCase();
       return MALE_VOICE_HINTS.some(function (h) { return n.indexOf(h) > -1; });
     });
-    if (male.length) return male[0];
-    var notFemale = pool.filter(function (v) {
+    var candidates = male.length ? male : pool.filter(function (v) {
       var n = v.name.toLowerCase();
       return !FEMALE_VOICE_HINTS.some(function (h) { return n.indexOf(h) > -1; });
     });
-    return notFemale[0] || pool[0];
+    if (!candidates.length) candidates = pool;
+    // Prefer the more expressive "Natural"/"Online"/"Enhanced" neural voices where available --
+    // they read with far more energy and inflection than the legacy robotic system voices.
+    var premium = candidates.filter(function (v) {
+      var n = v.name.toLowerCase();
+      return PREMIUM_VOICE_HINTS.some(function (h) { return n.indexOf(h) > -1; });
+    });
+    return premium[0] || candidates[0];
   }
 
   function speakAndWait(text, minWait) {
@@ -1431,7 +1508,8 @@
       var utter = new SpeechSynthesisUtterance(text);
       var voice = pickVoice();
       if (voice) utter.voice = voice;
-      utter.rate = 1.0;
+      utter.rate = 1.07;
+      utter.pitch = 1.03;
       var settled = false;
       function finish() { if (settled) return; settled = true; clearInterval(pollAbort); clearTimeout(safety); resolve(); }
       utter.onend = finish;
