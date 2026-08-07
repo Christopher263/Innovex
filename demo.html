@@ -292,6 +292,37 @@
   .due-label.overdue { background: var(--critical-soft); color: var(--critical); }
   .due-label.upcoming { background: var(--surface-sunk); color: var(--ink-faint); }
 
+  /* ---------- autoplay (screen-recordable walkthrough) ---------- */
+  .autoplay-caption {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(10px);
+    max-width: 700px; width: calc(100% - 40px); background: rgba(8,10,16,0.94); color: #fff;
+    padding: 15px 24px; border-radius: 12px; font-size: 16.5px; font-weight: 600; line-height: 1.45;
+    text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.45); z-index: 400; opacity: 0;
+    transition: opacity .25s ease, transform .25s ease; pointer-events: none;
+  }
+  .autoplay-caption.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .autoplay-live-badge {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 400;
+    display: none; align-items: center; gap: 7px; background: var(--critical); color: #fff;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; padding: 5px 12px 5px 9px; border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+  }
+  .autoplay-live-badge.show { display: flex; }
+  .autoplay-live-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: autoplayBlink 1.1s ease-in-out infinite; }
+  @keyframes autoplayBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+  tr.autoplay-spot td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+  tr.autoplay-spot { background: var(--accent-soft); }
+  .draft-card.autoplay-spot, .kcard.autoplay-spot {
+    outline: 2px solid var(--accent); outline-offset: -2px; animation: autoplayPulse 1.3s ease-in-out infinite;
+  }
+  @keyframes autoplayPulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 40%, transparent); }
+    50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .autoplay-live-badge .dot, .draft-card.autoplay-spot, .kcard.autoplay-spot { animation: none; }
+  }
+
   @media print {
     body { background: #fff; color: #18151F; }
     .sidebar, .toast, .topbar button, .preview-bar { display: none !important; }
@@ -316,9 +347,13 @@
 <div class="preview-bar">
   <div><strong>You're viewing a live preview.</strong> Sample data for a fictional boutique agency — nothing here is a real client, and nothing you do on this page is saved.</div>
   <div class="actions">
+    <button class="btn btn-sm" id="btnPlayDemo" type="button">▶ Play demo (~40s)</button>
     <a class="btn btn-primary btn-sm" href="/?trial=1">Start your free trial</a>
   </div>
 </div>
+
+<div class="autoplay-live-badge" id="autoplayBadge"><span class="dot"></span>DEMO PLAYING</div>
+<div class="autoplay-caption" id="autoplayCaption"></div>
 
 <div class="app-shell">
   <aside class="sidebar">
@@ -1344,6 +1379,111 @@
     populateSettingsForm(state.settings);
     refreshApprovalBadge();
   }
+
+  /* ---------- autoplay: a self-running walkthrough meant to be screen-recorded ---------- */
+  var autoplayRunning = false;
+  var autoplayAborted = false;
+  var autoplayCaptionEl = document.getElementById('autoplayCaption');
+  var autoplayBadgeEl = document.getElementById('autoplayBadge');
+  var autoplayBtn = document.getElementById('btnPlayDemo');
+
+  function sleep(ms) {
+    return new Promise(function (resolve) {
+      var start = Date.now();
+      var iv = setInterval(function () {
+        if (autoplayAborted || Date.now() - start >= ms) { clearInterval(iv); resolve(); }
+      }, 100);
+    });
+  }
+
+  function goTab(tab) {
+    var btn = document.querySelector('.navitem[data-tab="' + tab + '"]');
+    if (btn && !btn.classList.contains('active')) btn.click();
+  }
+
+  function clearSpotlights() {
+    document.querySelectorAll('.autoplay-spot').forEach(function (el) { el.classList.remove('autoplay-spot'); });
+  }
+
+  function spotlight(el) {
+    if (!el) return;
+    clearSpotlights();
+    el.classList.add('autoplay-spot');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function highlightRow(itemId) {
+    var btn = document.querySelector('[data-followup="' + itemId + '"]');
+    spotlight(btn ? btn.closest('tr') : null);
+  }
+  function highlightKanbanCard(itemId) {
+    var card = document.querySelector('[data-qf-followup="' + itemId + '"], [data-qf-viewdraft="' + itemId + '"]');
+    spotlight(card ? card.closest('.kcard') : null);
+  }
+  function highlightDraftForItem(itemId) {
+    var d = state.drafts.filter(function (x) { return x.email_thread_id === itemId && x.status === 'pending_approval'; })[0];
+    if (!d) return;
+    var btn = document.querySelector('[data-approve="' + d.id + '"]');
+    spotlight(btn ? btn.closest('.draft-card') : null);
+  }
+
+  function approveFirstPendingFor(itemId) {
+    var d = state.drafts.filter(function (x) { return x.email_thread_id === itemId && x.status === 'pending_approval'; })[0];
+    if (d) approveDraft(d.id, document.querySelector('[data-approve="' + d.id + '"]'));
+  }
+
+  var AUTOPLAY_STEPS = [
+    { tab: 'overview', caption: 'This is Innovex — every open proposal and invoice a boutique agency has out, ranked by dollars and days quiet.', wait: 3400 },
+    { tab: 'overview', caption: 'Half Light Studio’s $41,500 proposal has only been quiet 2 days — nothing to do yet.', spot: function () { highlightRow('demo-5'); }, wait: 3000 },
+    { tab: 'overview', caption: 'Bright Harbor Consulting’s invoice is 16 days quiet and overdue.', spot: function () { highlightRow('demo-2'); }, wait: 2800 },
+    { tab: 'approvals', caption: 'Innovex already drafted a follow-up for it. Nothing sends until a human approves it.', spot: function () { highlightDraftForItem('demo-2'); }, wait: 3400 },
+    { caption: 'One click to approve and send.', action: function () { approveFirstPendingFor('demo-2'); }, wait: 2600 },
+    { caption: 'The stage moves automatically — no manual tracking, no spreadsheet.', wait: 2600 },
+    { tab: 'pipeline', caption: 'Every item lives on a simple board: Sent, Followed up, Replied, Signed / Paid.', wait: 3000 },
+    { tab: 'pipeline', caption: 'Redwood Ops has gone quiet with nothing drafted yet — generate a follow-up on demand.', spot: function () { highlightKanbanCard('demo-3'); }, wait: 2600 },
+    { caption: 'Drafting…', action: function () { followUpNow('demo-3'); }, wait: 2200 },
+    { tab: 'approvals', caption: 'Review it, edit it if you want, then approve.', spot: function () { highlightDraftForItem('demo-3'); }, wait: 2800 },
+    { caption: 'Sent — and the pipeline updates itself.', action: function () { approveFirstPendingFor('demo-3'); }, wait: 2600 },
+    { tab: 'overview', caption: 'As deals close, recovered revenue shows up automatically.', wait: 2400 },
+    { caption: 'Marlowe Digital just signed.', action: function () { var m = state.items.filter(function (i) { return i.id === 'demo-6'; })[0]; if (m) markItemPaid(m.id); }, wait: 3200 },
+    { caption: 'That’s Innovex — follow-ups that used to fall through the cracks, sent automatically, approved by you.', wait: 4400 }
+  ];
+
+  async function runAutoplayDemo() {
+    if (autoplayRunning) return;
+    autoplayRunning = true;
+    autoplayAborted = false;
+    autoplayBtn.textContent = '■ Stop demo';
+    autoplayBadgeEl.classList.add('show');
+
+    state = buildInitialState();
+    renderAll();
+    goTab('overview');
+    autoplayCaptionEl.classList.add('show');
+
+    for (var i = 0; i < AUTOPLAY_STEPS.length; i++) {
+      if (autoplayAborted) break;
+      var step = AUTOPLAY_STEPS[i];
+      if (step.tab) goTab(step.tab);
+      clearSpotlights();
+      if (step.spot) step.spot();
+      if (step.action) step.action();
+      autoplayCaptionEl.textContent = step.caption || '';
+      await sleep(step.wait);
+      if (autoplayAborted) break;
+    }
+
+    clearSpotlights();
+    autoplayCaptionEl.classList.remove('show');
+    autoplayBadgeEl.classList.remove('show');
+    autoplayBtn.textContent = '▶ Play demo (~40s)';
+    autoplayRunning = false;
+  }
+
+  autoplayBtn.addEventListener('click', function () {
+    if (autoplayRunning) { autoplayAborted = true; return; }
+    runAutoplayDemo();
+  });
 
   renderAll();
 </script>
