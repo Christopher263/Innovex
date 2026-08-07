@@ -1827,6 +1827,7 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
   tabSignup.addEventListener('click', function () { setAuthMode('signup'); });
   tabSignin.addEventListener('click', function () { setAuthMode('signin'); });
+  if (new URLSearchParams(window.location.search).get('trial')) openModal('signup');
   switchToSignin.addEventListener('click', function () { setAuthMode(authMode === 'signup' ? 'signin' : 'signup'); });
 
   document.getElementById('googleBtn').addEventListener('click', async function () {
