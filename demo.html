@@ -359,8 +359,7 @@
 <div class="preview-bar">
   <div><strong>You're viewing a live preview.</strong> Sample data for a fictional boutique agency — nothing here is a real client, and nothing you do on this page is saved.</div>
   <div class="actions">
-    <button class="btn btn-sm" id="btnNarration" type="button" title="Toggle spoken narration">🔊 Voice on</button>
-    <button class="btn btn-sm" id="btnPlayDemo" type="button">▶ Play demo</button>
+    <button class="btn btn-sm" id="btnPlayDemo" type="button">▶ Play demo (~40s)</button>
     <a class="btn btn-primary btn-sm" href="/?trial=1">Start your free trial</a>
   </div>
 </div>
@@ -1466,78 +1465,6 @@
     });
   }
 
-  /* ---------- narration: the browser's own (neural, on modern OSes) text-to-speech --
-     no API key, no server call. We just bias voice selection toward a male-sounding one. */
-  var narrationSupported = typeof window.speechSynthesis !== 'undefined';
-  var narrationEnabled = narrationSupported;
-  var narrationBtn = document.getElementById('btnNarration');
-  var MALE_VOICE_HINTS = ['david', 'mark', 'guy', 'ryan', 'james', 'daniel', 'alex', 'fred', 'tom', 'male', 'man', 'george', 'oliver'];
-  var FEMALE_VOICE_HINTS = ['zira', 'aria', 'jenny', 'samantha', 'victoria', 'karen', 'female', 'woman', 'susan', 'emma', 'ava', 'zoe', 'hazel'];
-
-  var PREMIUM_VOICE_HINTS = ['natural', 'online', 'enhanced', 'premium', 'neural'];
-
-  function pickVoice() {
-    if (!narrationSupported) return null;
-    var voices = window.speechSynthesis.getVoices() || [];
-    if (!voices.length) return null;
-    var english = voices.filter(function (v) { return /^en/i.test(v.lang); });
-    var pool = english.length ? english : voices;
-    var male = pool.filter(function (v) {
-      var n = v.name.toLowerCase();
-      return MALE_VOICE_HINTS.some(function (h) { return n.indexOf(h) > -1; });
-    });
-    var candidates = male.length ? male : pool.filter(function (v) {
-      var n = v.name.toLowerCase();
-      return !FEMALE_VOICE_HINTS.some(function (h) { return n.indexOf(h) > -1; });
-    });
-    if (!candidates.length) candidates = pool;
-    // Prefer the more expressive "Natural"/"Online"/"Enhanced" neural voices where available --
-    // they read with far more energy and inflection than the legacy robotic system voices.
-    var premium = candidates.filter(function (v) {
-      var n = v.name.toLowerCase();
-      return PREMIUM_VOICE_HINTS.some(function (h) { return n.indexOf(h) > -1; });
-    });
-    return premium[0] || candidates[0];
-  }
-
-  function speakAndWait(text, minWait) {
-    return new Promise(function (resolve) {
-      if (autoplayAborted) { resolve(); return; }
-      if (!narrationSupported || !narrationEnabled || !text) { sleep(minWait).then(resolve); return; }
-      window.speechSynthesis.cancel();
-      var utter = new SpeechSynthesisUtterance(text);
-      var voice = pickVoice();
-      if (voice) utter.voice = voice;
-      utter.rate = 1.07;
-      utter.pitch = 1.03;
-      var settled = false;
-      function finish() { if (settled) return; settled = true; clearInterval(pollAbort); clearTimeout(safety); resolve(); }
-      utter.onend = finish;
-      utter.onerror = finish;
-      window.speechSynthesis.speak(utter);
-      var pollAbort = setInterval(function () {
-        if (autoplayAborted) { window.speechSynthesis.cancel(); finish(); }
-      }, 150);
-      // Safety net: some browsers occasionally never fire onend.
-      var safety = setTimeout(finish, Math.max(minWait, 15000));
-    });
-  }
-
-  if (narrationSupported) {
-    window.speechSynthesis.getVoices();
-    window.speechSynthesis.onvoiceschanged = function () { pickVoice(); };
-  } else if (narrationBtn) {
-    narrationBtn.hidden = true;
-  }
-
-  if (narrationBtn) {
-    narrationBtn.addEventListener('click', function () {
-      narrationEnabled = !narrationEnabled;
-      narrationBtn.textContent = narrationEnabled ? '🔊 Voice on' : '🔇 Voice off';
-      if (!narrationEnabled && narrationSupported) window.speechSynthesis.cancel();
-    });
-  }
-
   function goTab(tab) {
     var btn = document.querySelector('.navitem[data-tab="' + tab + '"]');
     if (btn && !btn.classList.contains('active')) btn.click();
@@ -1611,21 +1538,20 @@
       if (step.spot) step.spot();
       if (step.action) step.action();
       autoplayCaptionEl.textContent = step.caption || '';
-      await speakAndWait(step.caption, step.wait);
+      await sleep(step.wait);
       if (autoplayAborted) break;
     }
 
     clearSpotlights();
     autoplayCaptionEl.classList.remove('show');
     autoplayBadgeEl.classList.remove('show');
-    autoplayBtn.textContent = '▶ Play demo';
+    autoplayBtn.textContent = '▶ Play demo (~40s)';
     autoplayRunning = false;
   }
 
   autoplayBtn.addEventListener('click', function () {
     if (autoplayRunning) {
       autoplayAborted = true;
-      if (narrationSupported) window.speechSynthesis.cancel();
       return;
     }
     runAutoplayDemo();
