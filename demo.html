@@ -974,20 +974,60 @@
     }).join('');
   }
 
+  function draftTier(item) {
+    var s = state.settings || {};
+    var second = s.second_followup_days || 7;
+    var final = s.final_followup_days || 14;
+    return item.days >= final ? 'final' : (item.days >= second ? 'second' : 'first');
+  }
+
   function craftDraft(item) {
-    var tone = (state.settings && state.settings.tone) || 'professional';
-    var sign = (state.settings && state.settings.signature_name) || 'Jordan';
+    var s = state.settings || {};
+    var tone = s.tone || 'professional';
+    var sign = s.signature_name || 'Jordan';
+    var tier = draftTier(item);
     var noun = item.kind === 'invoice' ? 'invoice' : 'proposal';
+    var amt = ' (' + money(item.amount) + ')';
+    var d = item.days + ' day' + (item.days === 1 ? '' : 's');
+
     var openers = {
-      professional: 'Hi there,\n\nFollowing up on the ' + noun + ' for ' + item.desc + '.',
-      friendly: 'Hey!\n\nWanted to circle back on the ' + noun + ' for ' + item.desc + ' — hope things have been good on your end.',
-      direct: 'Hi,\n\nChecking in on the ' + noun + ' for ' + item.desc + '.'
+      professional: {
+        first: 'Hi there,\n\nFollowing up on the ' + noun + amt + ' for ' + item.desc + '.',
+        second: 'Hi there,\n\nCircling back on the ' + noun + amt + ' for ' + item.desc + ' — haven\'t heard back yet.',
+        final: 'Hi there,\n\nLast check-in on the ' + noun + amt + ' for ' + item.desc + ' before I follow up a different way.'
+      },
+      friendly: {
+        first: 'Hey!\n\nWanted to circle back on the ' + noun + amt + ' for ' + item.desc + ' — hope things have been good on your end.',
+        second: 'Hey!\n\nJust nudging this back to the top of your inbox — the ' + noun + amt + ' for ' + item.desc + ' is still open on my end.',
+        final: 'Hey!\n\nOne more nudge on the ' + noun + amt + ' for ' + item.desc + ' — want to make sure this didn\'t just get buried.'
+      },
+      direct: {
+        first: 'Hi,\n\nChecking in on the ' + noun + amt + ' for ' + item.desc + '.',
+        second: 'Hi,\n\nStill checking in on the ' + noun + amt + ' for ' + item.desc + ' — no word back yet.',
+        final: 'Hi,\n\nFinal check-in on the ' + noun + amt + ' for ' + item.desc + '.'
+      }
     };
-    var middle = item.kind === 'invoice'
-      ? ' It\'s been ' + item.days + ' day' + (item.days === 1 ? '' : 's') + ' since it was sent — let me know if anything\'s blocking payment, or if you need it resent.'
-      : ' It\'s been ' + item.days + ' day' + (item.days === 1 ? '' : 's') + ' since I sent it over — happy to answer any questions or adjust anything that doesn\'t fit.';
-    var closer = '\n\nLet me know what you think whenever you get a chance.\n\nBest,\n' + sign;
-    return { subject: 'Re: ' + item.desc, body: (openers[tone] || openers.professional) + middle + closer };
+    var ctas = {
+      first: item.kind === 'invoice'
+        ? ' It\'s been ' + d + ' since it was sent — let me know if anything\'s blocking payment, or if you need it resent.'
+        : ' It\'s been ' + d + ' since I sent it over — happy to answer any questions or adjust anything that doesn\'t fit.',
+      second: item.kind === 'invoice'
+        ? ' It\'s now been ' + d + ' — could you let me know where this stands, or flag it if there\'s an issue on your end?'
+        : ' It\'s now been ' + d + ' since I sent it over — would love to know if it\'s still moving through your process, or if anything needs adjusting.',
+      final: item.kind === 'invoice'
+        ? ' This has been open for ' + d + ' now. If I don\'t hear back this week I\'ll follow up by phone, so let me know if there\'s a better way to reach you.'
+        : ' It\'s been ' + d + ' with no response, so I\'ll assume the timing isn\'t right unless I hear otherwise this week — happy to pick this back up whenever works.'
+    };
+    var closers = {
+      first: '\n\nLet me know what you think whenever you get a chance.\n\nBest,\n' + sign,
+      second: '\n\nAppreciate you taking a look when you can.\n\nBest,\n' + sign,
+      final: '\n\nHope to hear from you soon.\n\nBest,\n' + sign
+    };
+
+    var toneOpeners = openers[tone] || openers.professional;
+    var opener = toneOpeners[tier] || toneOpeners.first;
+    var subjectPrefix = tier === 'final' ? 'Final follow-up: ' : 'Re: ';
+    return { subject: subjectPrefix + item.desc, body: opener + (ctas[tier] || ctas.first) + (closers[tier] || closers.first) };
   }
 
   function followUpNow(itemId, btn) {
@@ -999,7 +1039,7 @@
     if (btn) { btn.disabled = true; btn.textContent = 'Drafting…'; }
     setTimeout(function () {
       var draft = craftDraft(item);
-      state.drafts.push({ id: 'draft-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6), email_thread_id: item.id, client_name: item.client, subject: draft.subject, body_text: draft.body, draft_reason: item.days + ' day' + (item.days === 1 ? '' : 's') + ' quiet after ' + item.kind + ' sent — requested on demand', status: 'pending_approval' });
+      state.drafts.push({ id: 'draft-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6), email_thread_id: item.id, client_name: item.client, subject: draft.subject, body_text: draft.body, draft_reason: item.days + ' day' + (item.days === 1 ? '' : 's') + ' quiet after ' + item.kind + ' sent — ' + draftTier(item) + ' follow-up, requested on demand', status: 'pending_approval' });
       if (btn) { btn.disabled = false; btn.textContent = origText; }
       renderApprovals();
       renderOverview();
@@ -1021,7 +1061,7 @@
     setTimeout(function () {
       due.forEach(function (item) {
         var draft = craftDraft(item);
-        state.drafts.push({ id: 'draft-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6) + '-' + item.id, email_thread_id: item.id, client_name: item.client, subject: draft.subject, body_text: draft.body, draft_reason: item.days + ' day' + (item.days === 1 ? '' : 's') + ' quiet after ' + item.kind + ' sent', status: 'pending_approval' });
+        state.drafts.push({ id: 'draft-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6) + '-' + item.id, email_thread_id: item.id, client_name: item.client, subject: draft.subject, body_text: draft.body, draft_reason: item.days + ' day' + (item.days === 1 ? '' : 's') + ' quiet after ' + item.kind + ' sent — ' + draftTier(item) + ' follow-up', status: 'pending_approval' });
       });
       if (btn) { btn.disabled = false; btn.textContent = origText; }
       renderApprovals(); renderOverview(); renderKanban();
